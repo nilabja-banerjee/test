@@ -1,0 +1,206 @@
+{
+  "LeadListingAction": [
+    "com.javachap.domain.User",
+    "com.javachap.web.model.LeadListingForm",
+    "org.apache.struts.action.ActionErrors",
+    "com.javachap.service.ServiceUtils",
+    "java.util.List",
+    "org.apache.struts.action.ActionForward",
+    "javax.servlet.http.HttpServletResponse",
+    "ActionMessage",
+    "ActionErrors",
+    "org.apache.struts.action.ActionForm",
+    "com.javachap.domain.Lead",
+    "ActionMessages",
+    "javax.servlet.http.HttpServletRequest",
+    "org.apache.struts.action.ActionMapping",
+    "org.apache.struts.action.ActionMessages",
+    "com.javachap.service.LeadService",
+    "org.apache.struts.action.ActionMessage"
+  ],
+  "LogoutAction": [
+    "org.apache.struts.action.ActionForward",
+    "javax.servlet.http.HttpServletResponse",
+    "org.apache.struts.action.Action",
+    "org.apache.struts.action.ActionForm",
+    "javax.servlet.http.HttpServletRequest",
+    "org.apache.struts.action.ActionMapping"
+  ],
+  "LanguageAction": [
+    "org.apache.struts.action.ActionMapping",
+    "org.apache.struts.action.ActionForward",
+    "javax.servlet.http.HttpServletResponse",
+    "org.apache.struts.action.Action",
+    "com.javachap.web.model.LanguageForm",
+    "org.apache.struts.action.ActionForm",
+    "javax.servlet.http.HttpServletRequest",
+    "java.util.Locale"
+  ],
+  "LeadListingForm": [],
+  "LoginAction": [
+    "com.javachap.domain.User",
+    "org.apache.struts.action.ActionErrors",
+    "com.javachap.service.ServiceUtils",
+    "org.apache.struts.action.ActionForward",
+    "javax.servlet.http.HttpServletResponse",
+    "ActionMessage",
+    "org.apache.struts.action.Action",
+    "ActionErrors",
+    "org.apache.struts.action.ActionForm",
+    "javax.servlet.http.HttpServletRequest",
+    "org.apache.struts.action.ActionMapping",
+    "com.javachap.web.model.LoginForm",
+    "org.apache.struts.action.ActionMessage"
+  ],
+  "LoginForm": [],
+  "LeadAction": [
+    "org.apache.struts.action.ActionForward",
+    "ActionMessages",
+    "com.javachap.domain.Category",
+    "java.util.List",
+    "com.javachap.web.model.LeadForm",
+    "com.javachap.domain.User",
+    "org.apache.struts.action.ActionErrors",
+    "ActionErrors",
+    "LeadImpl",
+    "javax.servlet.http.HttpServletRequest",
+    "org.apache.struts.action.ActionMapping",
+    "org.apache.struts.action.ActionMessage",
+    "javax.servlet.http.HttpServletResponse",
+    "ActionMessage",
+    "com.javachap.domain.impl.LeadImpl",
+    "org.apache.struts.action.ActionForm",
+    "com.javachap.domain.Lead",
+    "com.javachap.service.ServiceUtils",
+    "org.apache.struts.action.ActionMessages",
+    "com.javachap.service.LeadService"
+  ],
+  "SecuredAction": [
+    "org.apache.struts.action.ActionErrors",
+    "org.apache.struts.action.ActionForward",
+    "javax.servlet.http.HttpServletResponse",
+    "ActionMessage",
+    "org.apache.struts.action.Action",
+    "ActionErrors",
+    "org.apache.struts.action.ActionForm",
+    "javax.servlet.http.HttpServletRequest",
+    "org.apache.struts.action.ActionMapping",
+    "org.apache.struts.action.ActionMessage"
+  ],
+  "LeadForm": [],
+  "BaseForm": [
+    "org.apache.struts.action.ActionForm"
+  ],
+  "LanguageForm": [
+    "org.apache.struts.action.ActionForm"
+  ],
+  "HibernateUtils": [
+    "org.apache.commons.logging.LogFactory",
+    "org.hibernate.cfg.Configuration",
+    "org.hibernate.Session",
+    "org.apache.commons.logging.Log",
+    "org.hibernate.SessionFactory",
+    "ExceptionInInitializerError",
+    "org.hibernate.HibernateException",
+    "Configuration"
+  ],
+  "ServiceUtils": [
+    "com.javachap.service.impl.UserServiceImpl",
+    "com.javachap.service.impl.CategoryServiceImpl",
+    "com.javachap.service.impl.LeadServiceImpl"
+  ],
+  "CategoryService": [
+    "java.util.List",
+    "com.javachap.domain.Category"
+  ],
+  "Service": [
+    "java.io.Serializable"
+  ],
+  "UserService": [
+    "com.javachap.domain.User"
+  ],
+  "LeadService": [
+    "java.util.List",
+    "com.javachap.domain.User",
+    "com.javachap.domain.Lead"
+  ],
+  "ServiceImpl": [
+    "com.javachap.service.Service"
+  ],
+  "ServiceException": [],
+  "Test": [
+    "com.javachap.domain.User",
+    "com.javachap.domain.impl.UserImpl",
+    "java.util.List",
+    "com.javachap.domain.impl.CategoryImpl",
+    "com.javachap.service.UserService",
+    "com.javachap.domain.impl.LeadImpl",
+    "com.javachap.domain.Lead",
+    "UserImpl",
+    "CategoryImpl",
+    "LeadImpl",
+    "com.javachap.service.ServiceUtils",
+    "com.javachap.domain.Category",
+    "com.javachap.service.LeadService",
+    "com.javachap.service.CategoryService"
+  ],
+  "LeadServiceImpl": [
+    "com.javachap.domain.User",
+    "ServiceException",
+    "java.util.List",
+    "org.hibernate.Session",
+    "com.javachap.utils.HibernateUtils",
+    "org.hibernate.Query",
+    "com.javachap.domain.Lead",
+    "LeadServiceImpl",
+    "com.javachap.service.LeadService",
+    "org.hibernate.Transaction"
+  ],
+  "UserServiceImpl": [
+    "com.javachap.domain.User",
+    "java.util.List",
+    "com.javachap.service.UserService",
+    "org.hibernate.Session",
+    "com.javachap.utils.HibernateUtils",
+    "UserServiceImpl",
+    "org.hibernate.Query",
+    "ServiceException",
+    "org.hibernate.Transaction"
+  ],
+  "Category": [],
+  "User": [],
+  "Lead": [],
+  "Domain": [
+    "java.util.Date",
+    "java.io.Serializable"
+  ],
+  "CategoryServiceImpl": [
+    "java.util.List",
+    "org.hibernate.Session",
+    "com.javachap.service.CategoryService",
+    "com.javachap.utils.HibernateUtils",
+    "CategoryServiceImpl",
+    "org.hibernate.Query",
+    "com.javachap.domain.Category",
+    "ServiceException",
+    "org.hibernate.Transaction"
+  ],
+  "UserImpl": [
+    "StringBuffer",
+    "com.javachap.domain.User"
+  ],
+  "DomainImpl": [
+    "java.util.Date",
+    "com.javachap.domain.Domain"
+  ],
+  "CategoryImpl": [
+    "StringBuffer",
+    "com.javachap.domain.Category"
+  ],
+  "LeadImpl": [
+    "StringBuffer",
+    "com.javachap.domain.User",
+    "com.javachap.domain.Category",
+    "com.javachap.domain.Lead"
+  ]
+}

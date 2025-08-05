@@ -1,0 +1,14 @@
+You are a Java migration expert. Convert the following legacy Struts 1.x Java class to Spring 6-compliant code.
+
+- Use Spring MVC with annotations.
+- Remove all Struts dependencies.
+- Maintain functional equivalence.
+- Do not include explanation, just the code.
+
+<context>
+{{context}}
+</context>
+
+<file>
+{{source_code}}
+</file>

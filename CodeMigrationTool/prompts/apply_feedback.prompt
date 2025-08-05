@@ -1,0 +1,16 @@
+You are a migration assistant. You will enhance the generated Spring code using feedback from a reviewer.
+
+- Integrate missing elements.
+- Do not include explanation, only output valid Java code.
+
+<source_code>
+{{source_code}}
+</source_code>
+
+<generated_code>
+{{generated_code}}
+</generated_code>
+
+<feedback>
+{{feedback}}
+</feedback>

@@ -1,0 +1,299 @@
+{
+  "LeadListingAction": {
+    "calls": [
+      "com.javachap.domain.User",
+      "com.javachap.web.model.LeadListingForm",
+      "org.apache.struts.action.ActionErrors",
+      "com.javachap.service.ServiceUtils",
+      "java.util.List",
+      "org.apache.struts.action.ActionForward",
+      "javax.servlet.http.HttpServletResponse",
+      "ActionMessage",
+      "ActionErrors",
+      "org.apache.struts.action.ActionForm",
+      "com.javachap.domain.Lead",
+      "ActionMessages",
+      "javax.servlet.http.HttpServletRequest",
+      "org.apache.struts.action.ActionMapping",
+      "org.apache.struts.action.ActionMessages",
+      "com.javachap.service.LeadService",
+      "org.apache.struts.action.ActionMessage"
+    ],
+    "file": "LeadListingAction.java"
+  },
+  "LogoutAction": {
+    "calls": [
+      "org.apache.struts.action.ActionForward",
+      "javax.servlet.http.HttpServletResponse",
+      "org.apache.struts.action.Action",
+      "org.apache.struts.action.ActionForm",
+      "javax.servlet.http.HttpServletRequest",
+      "org.apache.struts.action.ActionMapping"
+    ],
+    "file": "LogoutAction.java"
+  },
+  "LanguageAction": {
+    "calls": [
+      "org.apache.struts.action.ActionMapping",
+      "org.apache.struts.action.ActionForward",
+      "javax.servlet.http.HttpServletResponse",
+      "org.apache.struts.action.Action",
+      "com.javachap.web.model.LanguageForm",
+      "org.apache.struts.action.ActionForm",
+      "javax.servlet.http.HttpServletRequest",
+      "java.util.Locale"
+    ],
+    "file": "LanguageAction.java"
+  },
+  "LeadListingForm": {
+    "calls": [],
+    "file": "LeadListingForm.java"
+  },
+  "LoginAction": {
+    "calls": [
+      "com.javachap.domain.User",
+      "org.apache.struts.action.ActionErrors",
+      "com.javachap.service.ServiceUtils",
+      "org.apache.struts.action.ActionForward",
+      "javax.servlet.http.HttpServletResponse",
+      "ActionMessage",
+      "org.apache.struts.action.Action",
+      "ActionErrors",
+      "org.apache.struts.action.ActionForm",
+      "javax.servlet.http.HttpServletRequest",
+      "org.apache.struts.action.ActionMapping",
+      "com.javachap.web.model.LoginForm",
+      "org.apache.struts.action.ActionMessage"
+    ],
+    "file": "LoginAction.java"
+  },
+  "LoginForm": {
+    "calls": [],
+    "file": "LoginForm.java"
+  },
+  "LeadAction": {
+    "calls": [
+      "org.apache.struts.action.ActionForward",
+      "ActionMessages",
+      "com.javachap.domain.Category",
+      "java.util.List",
+      "com.javachap.web.model.LeadForm",
+      "com.javachap.domain.User",
+      "org.apache.struts.action.ActionErrors",
+      "ActionErrors",
+      "LeadImpl",
+      "javax.servlet.http.HttpServletRequest",
+      "org.apache.struts.action.ActionMapping",
+      "org.apache.struts.action.ActionMessage",
+      "javax.servlet.http.HttpServletResponse",
+      "ActionMessage",
+      "com.javachap.domain.impl.LeadImpl",
+      "org.apache.struts.action.ActionForm",
+      "com.javachap.domain.Lead",
+      "com.javachap.service.ServiceUtils",
+      "org.apache.struts.action.ActionMessages",
+      "com.javachap.service.LeadService"
+    ],
+    "file": "LeadAction.java"
+  },
+  "SecuredAction": {
+    "calls": [
+      "org.apache.struts.action.ActionErrors",
+      "org.apache.struts.action.ActionForward",
+      "javax.servlet.http.HttpServletResponse",
+      "ActionMessage",
+      "org.apache.struts.action.Action",
+      "ActionErrors",
+      "org.apache.struts.action.ActionForm",
+      "javax.servlet.http.HttpServletRequest",
+      "org.apache.struts.action.ActionMapping",
+      "org.apache.struts.action.ActionMessage"
+    ],
+    "file": "SecuredAction.java"
+  },
+  "LeadForm": {
+    "calls": [],
+    "file": "LeadForm.java"
+  },
+  "BaseForm": {
+    "calls": [
+      "org.apache.struts.action.ActionForm"
+    ],
+    "file": "BaseForm.java"
+  },
+  "LanguageForm": {
+    "calls": [
+      "org.apache.struts.action.ActionForm"
+    ],
+    "file": "LanguageForm.java"
+  },
+  "HibernateUtils": {
+    "calls": [
+      "org.apache.commons.logging.LogFactory",
+      "org.hibernate.cfg.Configuration",
+      "org.hibernate.Session",
+      "org.apache.commons.logging.Log",
+      "org.hibernate.SessionFactory",
+      "ExceptionInInitializerError",
+      "org.hibernate.HibernateException",
+      "Configuration"
+    ],
+    "file": "HibernateUtils.java"
+  },
+  "ServiceUtils": {
+    "calls": [
+      "com.javachap.service.impl.UserServiceImpl",
+      "com.javachap.service.impl.CategoryServiceImpl",
+      "com.javachap.service.impl.LeadServiceImpl"
+    ],
+    "file": "ServiceUtils.java"
+  },
+  "CategoryService": {
+    "calls": [
+      "java.util.List",
+      "com.javachap.domain.Category"
+    ],
+    "file": "CategoryService.java"
+  },
+  "Service": {
+    "calls": [
+      "java.io.Serializable"
+    ],
+    "file": "Service.java"
+  },
+  "UserService": {
+    "calls": [
+      "com.javachap.domain.User"
+    ],
+    "file": "UserService.java"
+  },
+  "LeadService": {
+    "calls": [
+      "java.util.List",
+      "com.javachap.domain.User",
+      "com.javachap.domain.Lead"
+    ],
+    "file": "LeadService.java"
+  },
+  "ServiceImpl": {
+    "calls": [
+      "com.javachap.service.Service"
+    ],
+    "file": "ServiceImpl.java"
+  },
+  "ServiceException": {
+    "calls": [],
+    "file": "ServiceException.java"
+  },
+  "Test": {
+    "calls": [
+      "com.javachap.domain.User",
+      "com.javachap.domain.impl.UserImpl",
+      "java.util.List",
+      "com.javachap.domain.impl.CategoryImpl",
+      "com.javachap.service.UserService",
+      "com.javachap.domain.impl.LeadImpl",
+      "com.javachap.domain.Lead",
+      "UserImpl",
+      "CategoryImpl",
+      "LeadImpl",
+      "com.javachap.service.ServiceUtils",
+      "com.javachap.domain.Category",
+      "com.javachap.service.LeadService",
+      "com.javachap.service.CategoryService"
+    ],
+    "file": "Test.java"
+  },
+  "LeadServiceImpl": {
+    "calls": [
+      "com.javachap.domain.User",
+      "ServiceException",
+      "java.util.List",
+      "org.hibernate.Session",
+      "com.javachap.utils.HibernateUtils",
+      "org.hibernate.Query",
+      "com.javachap.domain.Lead",
+      "LeadServiceImpl",
+      "com.javachap.service.LeadService",
+      "org.hibernate.Transaction"
+    ],
+    "file": "LeadServiceImpl.java"
+  },
+  "UserServiceImpl": {
+    "calls": [
+      "com.javachap.domain.User",
+      "java.util.List",
+      "com.javachap.service.UserService",
+      "org.hibernate.Session",
+      "com.javachap.utils.HibernateUtils",
+      "UserServiceImpl",
+      "org.hibernate.Query",
+      "ServiceException",
+      "org.hibernate.Transaction"
+    ],
+    "file": "UserServiceImpl.java"
+  },
+  "Category": {
+    "calls": [],
+    "file": "Category.java"
+  },
+  "User": {
+    "calls": [],
+    "file": "User.java"
+  },
+  "Lead": {
+    "calls": [],
+    "file": "Lead.java"
+  },
+  "Domain": {
+    "calls": [
+      "java.util.Date",
+      "java.io.Serializable"
+    ],
+    "file": "Domain.java"
+  },
+  "CategoryServiceImpl": {
+    "calls": [
+      "java.util.List",
+      "org.hibernate.Session",
+      "com.javachap.service.CategoryService",
+      "com.javachap.utils.HibernateUtils",
+      "CategoryServiceImpl",
+      "org.hibernate.Query",
+      "com.javachap.domain.Category",
+      "ServiceException",
+      "org.hibernate.Transaction"
+    ],
+    "file": "CategoryServiceImpl.java"
+  },
+  "UserImpl": {
+    "calls": [
+      "StringBuffer",
+      "com.javachap.domain.User"
+    ],
+    "file": "UserImpl.java"
+  },
+  "DomainImpl": {
+    "calls": [
+      "java.util.Date",
+      "com.javachap.domain.Domain"
+    ],
+    "file": "DomainImpl.java"
+  },
+  "CategoryImpl": {
+    "calls": [
+      "StringBuffer",
+      "com.javachap.domain.Category"
+    ],
+    "file": "CategoryImpl.java"
+  },
+  "LeadImpl": {
+    "calls": [
+      "StringBuffer",
+      "com.javachap.domain.User",
+      "com.javachap.domain.Category",
+      "com.javachap.domain.Lead"
+    ],
+    "file": "LeadImpl.java"
+  }
+}

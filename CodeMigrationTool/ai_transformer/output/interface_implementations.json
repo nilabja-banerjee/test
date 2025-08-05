@@ -1,0 +1,26 @@
+{
+  "Service": [
+    "ServiceImpl"
+  ],
+  "LeadService": [
+    "LeadServiceImpl"
+  ],
+  "UserService": [
+    "UserServiceImpl"
+  ],
+  "CategoryService": [
+    "CategoryServiceImpl"
+  ],
+  "User": [
+    "UserImpl"
+  ],
+  "Domain": [
+    "DomainImpl"
+  ],
+  "Category": [
+    "CategoryImpl"
+  ],
+  "Lead": [
+    "LeadImpl"
+  ]
+}

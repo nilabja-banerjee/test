@@ -1,0 +1,5 @@
+You are a Java Spring 6 expert. Convert the following Struts 1.x Action class to a Spring 6 Controller.
+Ensure use of annotations, avoid using any Struts tags or references.
+
+Class:
+{{source_code}}

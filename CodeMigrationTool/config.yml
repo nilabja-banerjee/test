@@ -1,0 +1,18 @@
+source_code_base: /Users/nilabja/Documents/work/project/struts-to-spring6-migration/legacy-struts1
+output_dir: ai_transformer/output
+prompt_dir: prompts
+project_root_dir: /Users/nilabja/Documents/work/project/CodeMigrationTool
+
+
+primary_model:
+  provider: langchain
+  model_name: codellama:7b-instruct
+
+reviewer_model:
+  provider: langchain
+  model_name: qwen2:7b-instruct
+
+llm_settings:
+  temperature: 0.2
+  max_tokens: 4096
+  model_timeout: 60  # in seconds
