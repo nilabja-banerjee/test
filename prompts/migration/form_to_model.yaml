@@ -1,0 +1,267 @@
+# Form to Model Migration Prompts
+metadata:
+  name: "Form to Model Migration"
+  description: "Convert Struts 1 ActionForm classes to Spring Boot 3 model classes"
+  version: "1.1"
+  author: "Migration System"
+  last_updated: "2025-08-02"
+  success_criteria:
+    - "Plain Java class or Record with proper field definitions"
+    - "Spring validation annotations applied to fields"
+    - "No ActionForm inheritance or legacy imports"
+    - "JavaDoc for class and methods"
+    - "Serializable implementation if needed"
+    - "Consistent naming with project conventions"
+    - "Error handling preserved or enhanced"
+
+templates:
+  comprehensive_form_migration:
+    name: "Comprehensive Form Migration"
+    description: "Full migration with validation and Spring Boot features"
+    template: |
+      You are an expert Spring Boot developer and migration architect converting Struts ActionForm to a modern Spring Boot 3 model.
+
+      CONTEXT TAGS:
+      - Task: ActionForm to Spring Model
+      - Complexity: {complexity}
+      - Business Domain: {business_domain}
+      - Known Validation Patterns: {validation_patterns}
+      - Prior Field History: {context_history}
+      - Target Package: {target_package}
+
+      LEARNING CONTEXT:
+      {learning_context}
+
+      OBJECTIVE:
+      Migrate the following ActionForm to a clean, Spring Boot 3 model that follows modern Java 21 design principles.
+
+      ORIGINAL CLASS:
+      ```java
+      {source_code}
+      ```
+
+      DETECTED PATTERNS:
+      {detected_patterns}
+
+      MIGRATION REQUIREMENTS:
+      1. **Remove Legacy Dependencies**: Eliminate all inheritance from `ActionForm` and related legacy APIs.
+      2. **Validation Transformation**: Convert `validate()` method into Spring-compatible field-level validations:
+         - Use `@NotNull`, `@NotBlank`, `@Email`, `@Size`, `@Pattern`, etc.
+         - Preserve original validation logic and error messages
+         - Add custom validation groups if complex validation exists
+      3. **Initialization**: Replace `reset()` with proper default values or constructors.
+      4. **Modern Java Features**:
+         - Consider Records for immutable data transfer objects
+         - Use compact constructors for validation
+         - Apply final fields where immutability is desired
+         - Leverage pattern matching if applicable
+      5. **Field Accessibility**: Ensure all fields are accessible via `getters/setters` or record components.
+      6. **Naming Consistency**: Follow established patterns from context: {context_history}
+      7. **Additional Annotations**:
+         - `@JsonProperty` for JSON binding compatibility
+         - `@Schema` for OpenAPI documentation if REST endpoints exist
+         - Lombok annotations only if project uses them: `@Data`, `@Builder`
+      8. **Documentation**: Add comprehensive JavaDoc explaining business purpose and validation rules.
+
+      VALIDATION MAPPING GUIDE:
+      - Empty/null checks → `@NotNull`, `@NotBlank`
+      - String length → `@Size(min=x, max=y)`
+      - Email format → `@Email`
+      - Number ranges → `@Min`, `@Max`
+      - Custom patterns → `@Pattern(regexp="...")`
+      - Cross-field validation → `@Valid` + custom validator
+
+      OUTPUT REQUIREMENTS:
+      - Complete Java file starting with package declaration
+      - All necessary imports included
+      - Fully compilable class with no syntax errors
+      - Raw Java code only - no markdown blocks or explanations
+      - Preserve all original field types unless improvement is obvious
+
+      Generate the complete Spring Boot 3 model class:
+
+    parameters:
+      - artifact_type
+      - complexity
+      - validation_patterns
+      - business_domain
+      - source_code
+      - context_history
+      - target_package
+      - learning_context
+      - detected_patterns
+
+  simple_form_migration:
+    name: "Simple Form Migration"
+    description: "Basic POJO conversion for simple forms"
+    template: |
+      Convert this Struts ActionForm to a simple Spring Boot model class.
+
+      REQUIREMENTS:
+      - Remove ActionForm inheritance
+      - Add appropriate validation annotations
+      - Keep all fields and their getters/setters
+      - Use modern Java patterns
+
+      ORIGINAL FORM:
+      {source_code}
+
+      Generate ONLY the complete Java class:
+
+    parameters:
+      - source_code
+
+  record_based_migration:
+    name: "Record-Based Migration"
+    description: "Convert to Java Record for immutable data"
+    template: |
+      Convert this Struts ActionForm to a modern Java Record.
+
+      CONSIDERATIONS:
+      - Use Java Record for immutable data transfer
+      - Add validation annotations to record components
+      - Include custom validation methods if needed
+      - Maintain all original field validations
+
+      ORIGINAL FORM:
+      {source_code}
+
+      TRANSFORMATION:
+      - Convert class to record
+      - Move fields to record components
+      - Add validation annotations
+      - Include any custom validation logic
+
+      Generate the Java Record:
+
+    parameters:
+      - source_code
+
+  learning_enhanced_migration:
+    name: "Learning-Enhanced Migration"
+    description: "Migration using patterns from successful previous conversions"
+    template: |
+      You are an expert Spring Boot migration architect with access to successful patterns from previous ActionForm conversions.
+
+      SUCCESSFUL PATTERNS FROM MEMORY:
+      {learning_patterns}
+
+      PREVIOUS SUCCESSFUL CONVERSIONS:
+      {successful_examples}
+
+      CURRENT MIGRATION TASK:
+      Convert this ActionForm using proven patterns from similar successful migrations.
+
+      SOURCE CODE:
+      ```java
+      {source_code}
+      ```
+
+      CONTEXT:
+      - Business Domain: {business_domain}
+      - Complexity: {complexity}
+      - Similar Previous Success Score: {similarity_score}
+
+      APPLY LEARNED PATTERNS:
+      1. Use validation patterns that worked well in similar domains
+      2. Follow naming conventions from successful migrations
+      3. Apply field mapping strategies that achieved high validation scores
+      4. Incorporate error handling approaches that prevented compilation issues
+
+      REQUIREMENTS:
+      - Apply the most successful patterns from memory
+      - Ensure compatibility with established project conventions
+      - Generate clean, production-ready Spring Boot 3 model
+      - Include all necessary imports and annotations
+
+      Generate the enhanced model class using learned patterns:
+
+    parameters:
+      - source_code
+      - business_domain
+      - complexity
+      - learning_patterns
+      - successful_examples
+      - similarity_score
+
+validation:
+  success_indicators:
+    - "No ActionForm inheritance"
+    - "Proper validation annotations"
+    - "All fields have getters/setters or are record components"
+    - "Appropriate imports for validation"
+    - "Consistent naming with project conventions"
+    - "JavaDoc documentation present"
+  
+  quality_checks:
+    - "All validation logic preserved"
+    - "Proper field types and names"
+    - "Clean, readable code structure"
+    - "Appropriate use of modern Java features"
+    - "Error messages maintained or improved"
+    - "No compilation errors"
+    - "Follows established project patterns"
+
+  learning_metrics:
+    - "Compilation success rate"
+    - "Validation coverage percentage"
+    - "Code readability score"
+    - "Pattern consistency score"
+    - "Error reduction compared to original"
+
+examples:
+  input:
+    artifact_type: "form"
+    complexity: "medium"
+    validation_patterns: ["required_fields", "email_validation", "length_constraints"]
+    business_domain: "user"
+    source_code: |
+      public class UserForm extends ActionForm {
+          private String username;
+          private String email;
+          private String password;
+          
+          public ActionErrors validate(ActionMapping mapping, HttpServletRequest request) {
+              ActionErrors errors = new ActionErrors();
+              if (username == null || username.trim().length() == 0) {
+                  errors.add("username", new ActionMessage("error.username.required"));
+              }
+              if (email == null || !isValidEmail(email)) {
+                  errors.add("email", new ActionMessage("error.email.invalid"));
+              }
+              return errors;
+          }
+          
+          // getters and setters...
+      }
+
+  expected_output: |
+    package com.example.model;
+
+    import jakarta.validation.constraints.Email;
+    import jakarta.validation.constraints.NotBlank;
+
+    public class UserForm {
+        
+        @NotBlank(message = "Username is required")
+        private String username;
+        
+        @NotBlank(message = "Email is required")
+        @Email(message = "Email format is invalid")
+        private String email;
+        
+        @NotBlank(message = "Password is required")
+        private String password;
+        
+        // Constructor, getters, and setters
+        public UserForm() {}
+        
+        public String getUsername() { return username; }
+        public void setUsername(String username) { this.username = username; }
+        
+        public String getEmail() { return email; }
+        public void setEmail(String email) { this.email = email; }
+        
+        public String getPassword() { return password; }
+        public void setPassword(String password) { this.password = password; }
+    }

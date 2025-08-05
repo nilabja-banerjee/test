@@ -1,0 +1,1088 @@
+# JSP to Thymeleaf Migration Prompts
+metadata:
+  name: "JSP to Thymeleaf Template Migration"
+  description: "Convert JSP pages with Struts tags to modern Thymeleaf templates with Spring Boot 3"
+  version: "2.0"
+  author: "AI Migration System"
+  last_updated: "2025-08-02"
+  target_framework: "Spring Boot 3.3+"
+  target_java: "Java 21 LTS"
+  success_criteria:
+    - "Valid Thymeleaf template syntax (no parsing errors)"
+    - "All Struts tag libraries replaced with Thymeleaf equivalents"
+    - "Form binding and validation preserved via th:object and th:errors"
+    - "No JSP directives (<%@ %>) or scriptlets remain"
+    - "Semantic, responsive HTML5 structure"
+    - "CSRF protection included for forms"
+    - "Internationalization with #{message.key}"
+    - "Layout dialect used for common fragments if applicable"
+    - "Modern CSS framework integration (Bootstrap 5, Tailwind, etc.)"
+    - "Accessibility (ARIA) attributes included where appropriate"
+    - "Performance optimizations with Thymeleaf caching"
+    - "Security headers and CSP-compliant inline scripts removed"
+
+templates:
+  comprehensive_jsp_migration:
+    name: "Comprehensive JSP to Thymeleaf Migration"
+    description: "Full JSP to Thymeleaf conversion with modern Spring Boot 3 web practices"
+    template: |
+      You are an expert frontend developer and Thymeleaf specialist specializing in modernizing legacy JSP pages to cutting-edge Thymeleaf templates with Spring Boot 3.3+ and modern web standards.
+
+      MIGRATION CONTEXT:
+      - Source Framework: JSP with Struts 1.x tag libraries
+      - Target Framework: Thymeleaf 3.x with Spring Boot 3.3+
+      - Page Type: {page_type}
+      - Business Domain: {business_domain}
+      - Complexity: {complexity}
+      - Form Elements: {form_elements}
+      - UI Framework: {ui_framework}
+      - Internationalization Requirements: {i18n_requirements}
+
+      LEARNING CONTEXT FROM PREVIOUS MIGRATIONS:
+      {learning_context}
+
+      ORIGINAL JSP PAGE:
+      ```jsp
+      {source_code}
+      ```
+
+      DETECTED JSP PATTERNS:
+      {detected_patterns}
+
+      COMPREHENSIVE MIGRATION REQUIREMENTS:
+
+      1. **HTML5 DOCUMENT STRUCTURE**:
+         - Replace JSP directives with HTML5 doctype: `<!DOCTYPE html>`
+         - Add proper Thymeleaf namespace: `<html xmlns:th="http://www.thymeleaf.org">`
+         - Include layout dialect if using fragments: `xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"`
+         - Remove all `<%@ page %>`, `<%@ taglib %>` directives completely
+
+      2. **STRUTS TAG LIBRARY CONVERSION**:
+         - `<%@ taglib uri="http://struts.apache.org/tags-html" prefix="html" %>` → Remove completely
+         - `<%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean" %>` → Remove completely
+         - `<%@ taglib uri="http://struts.apache.org/tags-logic" prefix="logic" %>` → Remove completely
+         - `<%@ taglib uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>` → Replace with layout dialect
+
+      3. **FORM CONVERSION PATTERNS**:
+         - `<html:form action="/submit">` → `<form th:action="@{/submit}" th:object="${formModel}" method="post">`
+         - `<html:text property="username" />` → `<input type="text" th:field="*{username}" class="form-control" />`
+         - `<html:password property="password" />` → `<input type="password" th:field="*{password}" class="form-control" />`
+         - `<html:select property="country">` → `<select th:field="*{country}" class="form-select">`
+         - `<html:option value="US">United States</html:option>` → `<option value="US">United States</option>`
+         - `<html:checkbox property="active" />` → `<input type="checkbox" th:field="*{active}" class="form-check-input" />`
+         - `<html:submit value="Submit" />` → `<button type="submit" class="btn btn-primary">Submit</button>`
+
+      4. **DATA DISPLAY CONVERSION**:
+         - `<bean:write name="user" property="firstName" />` → `<span th:text="${user.firstName}"></span>`
+         - `<bean:write name="user" property="firstName" filter="false" />` → `<span th:utext="${user.firstName}"></span>`
+         - `<c:out value="${user.email}" />` → `<span th:text="${user.email}"></span>`
+
+      5. **CONDITIONAL LOGIC CONVERSION**:
+         - `<logic:present name="user">` → `<div th:if="${user != null}">`
+         - `<logic:notPresent name="errors">` → `<div th:unless="${errors != null}">`
+         - `<logic:equal name="user" property="status" value="active">` → `<div th:if="${user.status == 'active'}">`
+         - `<logic:iterate name="users" id="user">` → `<tr th:each="user : ${users}">`
+
+      6. **ERROR HANDLING & VALIDATION**:
+         - `<html:errors property="username" />` → `<div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="text-danger"></div>`
+         - `<html:errors />` → `<div th:if="${#fields.hasGlobalErrors()}" th:errors="*{global}" class="alert alert-danger"></div>`
+         - Global error display → `<div th:if="${error}" th:text="${error}" class="alert alert-danger"></div>`
+
+      7. **INTERNATIONALIZATION CONVERSION**:
+         - `<bean:message key="label.username" />` → `<label th:text="#{label.username}" for="username"></label>`
+         - `<bean:message key="error.required" arg0="Username" />` → `<span th:text="#{error.required(${username})}"></span>`
+         - Message parameters → `<span th:text="#{message.key(${param1}, ${param2})}"></span>`
+
+      8. **NAVIGATION & LINKS**:
+         - `<html:link action="/users">Users</html:link>` → `<a th:href="@{/users}">Users</a>`
+         - `<html:link action="/user" paramId="id" paramName="user" paramProperty="id">` → `<a th:href="@{/user(id=${user.id})}">Edit User</a>`
+
+      9. **LAYOUT & FRAGMENTS**:
+         - Convert includes to Thymeleaf fragments: `<div th:insert="~{fragments/header}"></div>`
+         - Create reusable components: `<div th:fragment="userCard(user)">`
+         - Layout inheritance: `<html layout:decorate="~{layouts/main}">`
+
+      10. **MODERN WEB FEATURES**:
+          - Add responsive meta tags: `<meta name="viewport" content="width=device-width, initial-scale=1">`
+          - Include modern CSS frameworks: Bootstrap 5, Tailwind CSS
+          - Add ARIA accessibility attributes
+          - Include progressive web app features if needed
+
+      11. **SECURITY ENHANCEMENTS**:
+          - CSRF protection: `<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />`
+          - Content Security Policy compliance
+          - Remove inline scripts and styles
+          - Add security headers via meta tags
+
+      12. **PERFORMANCE OPTIMIZATIONS**:
+          - Enable Thymeleaf template caching
+          - Optimize asset loading with defer/async
+          - Use modern image formats (WebP, AVIF)
+          - Implement lazy loading for images
+
+      STRUTS TO THYMELEAF MAPPING GUIDE:
+      ```html
+      <!-- Legacy JSP/Struts Pattern → Modern Thymeleaf Pattern -->
+      
+      <!-- Form Declaration -->
+      <html:form action="/login" method="post">
+      →
+      <form th:action="@{/login}" th:object="${loginForm}" method="post">
+      
+      <!-- Text Input -->
+      <html:text property="username" size="20" maxlength="50" />
+      →
+      <input type="text" th:field="*{username}" class="form-control" maxlength="50" 
+             placeholder="Enter username" aria-label="Username" />
+      
+      <!-- Select Dropdown -->
+      <html:select property="country">
+        <html:option value="">Select Country</html:option>
+        <html:options collection="countries" property="code" labelProperty="name" />
+      </html:select>
+      →
+      <select th:field="*{country}" class="form-select" aria-label="Country selection">
+        <option value="">Select Country</option>
+        <option th:each="country : ${countries}" 
+                th:value="${country.code}" 
+                th:text="${country.name}">Country Name</option>
+      </select>
+      
+      <!-- Error Display -->
+      <html:errors property="username" />
+      →
+      <div th:if="${#fields.hasErrors('username')}" 
+           th:errors="*{username}" 
+           class="invalid-feedback d-block"></div>
+      
+      <!-- Conditional Display -->
+      <logic:present name="user">
+        <bean:write name="user" property="firstName" />
+      </logic:present>
+      →
+      <span th:if="${user != null}" th:text="${user.firstName}"></span>
+      
+      <!-- Iteration -->
+      <logic:iterate name="users" id="user">
+        <tr>
+          <td><bean:write name="user" property="name" /></td>
+        </tr>
+      </logic:iterate>
+      →
+      <tr th:each="user : ${users}">
+        <td th:text="${user.name}">User Name</td>
+      </tr>
+      
+      <!-- Internationalization -->
+      <bean:message key="label.welcome" />
+      →
+      <span th:text="#{label.welcome}">Welcome</span>
+      ```
+
+      OUTPUT REQUIREMENTS:
+      - Complete HTML5 document with proper Thymeleaf namespace declarations
+      - All Struts tag libraries completely removed
+      - Modern responsive design with CSS framework integration
+      - Semantic HTML5 elements (nav, main, section, article, aside)
+      - ARIA accessibility attributes for screen readers
+      - CSRF protection for all forms
+      - Progressive enhancement considerations
+      - Clean, maintainable Thymeleaf template code
+      - No JSP directives, scriptlets, or tag library imports
+      - Include necessary meta tags for SEO and mobile optimization
+
+      EXAMPLE TRANSFORMATION PATTERN:
+      ```html
+      <!-- Modern Thymeleaf Template -->
+      <!DOCTYPE html>
+      <html xmlns:th="http://www.thymeleaf.org" 
+            xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+            layout:decorate="~{layouts/main}">
+      <head>
+          <title th:text="#{page.user.title}">User Management</title>
+          <meta name="description" th:content="#{page.user.description}" />
+      </head>
+      <body>
+          <main layout:fragment="content">
+              <div class="container-fluid">
+                  <h1 th:text="#{heading.user.form}">User Form</h1>
+                  
+                  <!-- Global Error Messages -->
+                  <div th:if="${error}" class="alert alert-danger" role="alert">
+                      <i class="fas fa-exclamation-triangle"></i>
+                      <span th:text="${error}">Error message</span>
+                  </div>
+                  
+                  <!-- Success Messages -->
+                  <div th:if="${success}" class="alert alert-success" role="alert">
+                      <i class="fas fa-check-circle"></i>
+                      <span th:text="${success}">Success message</span>
+                  </div>
+                  
+                  <!-- User Form -->
+                  <form th:action="@{/users/save}" th:object="${userForm}" method="post" 
+                        class="needs-validation" novalidate>
+                      
+                      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                      <input type="hidden" th:field="*{id}" />
+                      
+                      <div class="row">
+                          <div class="col-md-6">
+                              <div class="mb-3">
+                                  <label for="firstName" class="form-label" th:text="#{label.firstName}">First Name</label>
+                                  <input type="text" th:field="*{firstName}" class="form-control" 
+                                         th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid' : ''"
+                                         required aria-describedby="firstNameHelp" />
+                                  <div th:if="${#fields.hasErrors('firstName')}" 
+                                       th:errors="*{firstName}" class="invalid-feedback"></div>
+                                  <div id="firstNameHelp" class="form-text" th:text="#{help.firstName}">
+                                      Enter your first name
+                                  </div>
+                              </div>
+                          </div>
+                          
+                          <div class="col-md-6">
+                              <div class="mb-3">
+                                  <label for="lastName" class="form-label" th:text="#{label.lastName}">Last Name</label>
+                                  <input type="text" th:field="*{lastName}" class="form-control"
+                                         th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid' : ''"
+                                         required />
+                                  <div th:if="${#fields.hasErrors('lastName')}" 
+                                       th:errors="*{lastName}" class="invalid-feedback"></div>
+                              </div>
+                          </div>
+                      </div>
+                      
+                      <div class="mb-3">
+                          <label for="email" class="form-label" th:text="#{label.email}">Email</label>
+                          <input type="email" th:field="*{email}" class="form-control"
+                                 th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                                 required />
+                          <div th:if="${#fields.hasErrors('email')}" 
+                               th:errors="*{email}" class="invalid-feedback"></div>
+                      </div>
+                      
+                      <div class="mb-3">
+                          <label for="country" class="form-label" th:text="#{label.country}">Country</label>
+                          <select th:field="*{country}" class="form-select"
+                                  th:classappend="${#fields.hasErrors('country')} ? 'is-invalid' : ''"
+                                  required>
+                              <option value="" th:text="#{option.select.country}">Select Country</option>
+                              <option th:each="country : ${countries}" 
+                                      th:value="${country.code}" 
+                                      th:text="${country.name}">Country Name</option>
+                          </select>
+                          <div th:if="${#fields.hasErrors('country')}" 
+                               th:errors="*{country}" class="invalid-feedback"></div>
+                      </div>
+                      
+                      <div class="mb-3 form-check">
+                          <input type="checkbox" th:field="*{active}" class="form-check-input" />
+                          <label class="form-check-label" for="active" th:text="#{label.active}">Active</label>
+                      </div>
+                      
+                      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                          <a th:href="@{/users}" class="btn btn-outline-secondary me-md-2" 
+                             th:text="#{button.cancel}">Cancel</a>
+                          <button type="submit" class="btn btn-primary" th:text="#{button.save}">Save</button>
+                      </div>
+                  </form>
+                  
+                  <!-- User List -->
+                  <div th:if="${users != null and not #lists.isEmpty(users)}" class="mt-5">
+                      <h2 th:text="#{heading.user.list}">User List</h2>
+                      <div class="table-responsive">
+                          <table class="table table-striped table-hover">
+                              <thead class="table-dark">
+                                  <tr>
+                                      <th th:text="#{column.name}">Name</th>
+                                      <th th:text="#{column.email}">Email</th>
+                                      <th th:text="#{column.country}">Country</th>
+                                      <th th:text="#{column.status}">Status</th>
+                                      <th th:text="#{column.actions}">Actions</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <tr th:each="user : ${users}">
+                                      <td th:text="${user.firstName + ' ' + user.lastName}">Full Name</td>
+                                      <td th:text="${user.email}">email@example.com</td>
+                                      <td th:text="${user.countryName}">Country</td>
+                                      <td>
+                                          <span th:if="${user.active}" 
+                                                class="badge bg-success" th:text="#{status.active}">Active</span>
+                                          <span th:unless="${user.active}" 
+                                                class="badge bg-secondary" th:text="#{status.inactive}">Inactive</span>
+                                      </td>
+                                      <td>
+                                          <a th:href="@{/users/edit(id=${user.id})}" 
+                                             class="btn btn-sm btn-outline-primary" th:text="#{button.edit}">Edit</a>
+                                          <button type="button" class="btn btn-sm btn-outline-danger"
+                                                  th:onclick="'confirmDelete(' + ${user.id} + ')'"
+                                                  th:text="#{button.delete}">Delete</button>
+                                      </td>
+                                  </tr>
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+          </main>
+      </body>
+      </html>
+      ```
+
+      Generate the complete, modern Thymeleaf template using Spring Boot 3 patterns:
+
+    parameters:
+      - page_type
+      - business_domain
+      - complexity
+      - form_elements
+      - ui_framework
+      - i18n_requirements
+      - source_code
+      - detected_patterns
+      - learning_context
+
+  form_focused_migration:
+    name: "Form-Focused JSP Migration"
+    description: "Specialized conversion for form-heavy JSP pages with comprehensive validation"
+    template: |
+      You are a Thymeleaf form specialist converting JSP form pages to modern Spring Boot 3 Thymeleaf templates.
+
+      MIGRATION CONTEXT:
+      - Form Type: {form_type}
+      - Form Fields: {form_fields}
+      - Validation Patterns: {validation_patterns}
+      - Business Rules: {business_rules}
+
+      ORIGINAL JSP FORM:
+      ```jsp
+      {source_code}
+      ```
+
+      FORM CONVERSION REQUIREMENTS:
+      1. **Form Declaration** → `<form th:action="@{/path}" th:object="${formModel}" method="post">`
+      2. **Input Fields** → HTML5 input types with `th:field="*{fieldName}"`
+      3. **Validation** → `th:errors="*{fieldName}"` with Bootstrap validation classes
+      4. **Security** → CSRF token inclusion
+      5. **Accessibility** → ARIA labels and descriptions
+      6. **Progressive Enhancement** → Client-side validation with server-side fallback
+
+      FORM ELEMENT MAPPING:
+      - `<html:text property="email" />` → `<input type="email" th:field="*{email}" class="form-control" required />`
+      - `<html:password property="password" />` → `<input type="password" th:field="*{password}" class="form-control" required />`
+      - `<html:select property="category">` → `<select th:field="*{category}" class="form-select" required>`
+      - `<html:checkbox property="terms" />` → `<input type="checkbox" th:field="*{terms}" class="form-check-input" required />`
+      - `<html:textarea property="description" />` → `<textarea th:field="*{description}" class="form-control"></textarea>`
+
+      VALIDATION ERROR HANDLING:
+      - Field-specific errors → `<div th:if="${#fields.hasErrors('field')}" th:errors="*{field}" class="invalid-feedback"></div>`
+      - Global errors → `<div th:if="${#fields.hasGlobalErrors()}" th:errors="*{global}" class="alert alert-danger"></div>`
+      - Success messages → `<div th:if="${success}" th:text="${success}" class="alert alert-success"></div>`
+
+      OUTPUT REQUIREMENTS:
+      - Complete responsive form with Bootstrap 5 classes
+      - Comprehensive validation display
+      - CSRF protection included
+      - Semantic HTML5 structure
+      - Accessibility compliant
+      - No JSP remnants
+
+      Generate the complete Thymeleaf form template:
+
+    parameters:
+      - form_type
+      - form_fields
+      - validation_patterns
+      - business_rules
+      - source_code
+
+  layout_migration:
+    name: "Layout-Aware Migration"
+    description: "Migration using Thymeleaf layout dialect for maintainable, reusable templates"
+    template: |
+      You are a Thymeleaf layout specialist converting JSP pages to modular Thymeleaf templates with layout inheritance.
+
+      LAYOUT CONTEXT:
+      - Page Structure: {page_structure}
+      - Common Elements: {common_elements}
+      - Navigation Type: {navigation_type}
+      - Layout Complexity: {layout_complexity}
+
+      ORIGINAL JSP PAGE:
+      ```jsp
+      {source_code}
+      ```
+
+      LAYOUT MIGRATION REQUIREMENTS:
+      1. **Layout Template Creation** → Create base layout with `layout:fragment` definitions
+      2. **Fragment Definition** → Define reusable fragments for header, footer, navigation
+      3. **Content Inheritance** → Use `layout:decorate` to extend base layout
+      4. **Fragment Insertion** → Use `th:insert`, `th:replace` for common elements
+      5. **Resource Management** → Centralize CSS/JS includes in layout template
+
+      LAYOUT PATTERNS:
+      - **Base Layout** → `<html layout:decorate="~{layouts/base}">`
+      - **Header Fragment** → `<div th:fragment="header">...</div>`
+      - **Navigation Fragment** → `<nav th:fragment="navigation">...</nav>`
+      - **Content Section** → `<main layout:fragment="content">...</main>`
+      - **Footer Fragment** → `<footer th:fragment="footer">...</footer>`
+
+      FRAGMENT STRUCTURE:
+      ```html
+      <!-- layouts/base.html -->
+      <!DOCTYPE html>
+      <html xmlns:th="http://www.thymeleaf.org" 
+            xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">App Name</title>
+          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+          <th:block layout:fragment="extra-css"></th:block>
+      </head>
+      <body>
+          <div th:replace="~{fragments/header}"></div>
+          <div th:replace="~{fragments/navigation}"></div>
+          <main layout:fragment="content"></main>
+          <div th:replace="~{fragments/footer}"></div>
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+          <th:block layout:fragment="extra-js"></th:block>
+      </body>
+      </html>
+      ```
+
+      OUTPUT REQUIREMENTS:
+      - Complete layout template hierarchy
+      - Modular fragment components
+      - Content pages using layout inheritance
+      - Optimized resource loading
+      - SEO-friendly structure
+
+      Generate the complete layout-aware Thymeleaf template structure:
+
+    parameters:
+      - page_structure
+      - common_elements
+      - navigation_type
+      - layout_complexity
+      - source_code
+
+  learning_enhanced_jsp_migration:
+    name: "Learning-Enhanced JSP Migration"
+    description: "Migration using patterns from successful previous JSP conversions"
+    template: |
+      You are an expert Thymeleaf migration architect with access to successful patterns from previous JSP migrations.
+
+      SUCCESSFUL PATTERNS FROM MEMORY:
+      {learning_patterns}
+
+      PREVIOUS SUCCESSFUL CONVERSIONS:
+      {successful_examples}
+
+      CURRENT MIGRATION TASK:
+      Convert this JSP page using proven patterns from similar successful migrations.
+
+      SOURCE JSP CODE:
+      ```jsp
+      {source_code}
+      ```
+
+      CONTEXT:
+      - Page Type: {page_type}
+      - Business Domain: {business_domain}
+      - Complexity: {complexity}
+      - Similar Previous Success Score: {similarity_score}
+
+      APPLY LEARNED PATTERNS:
+      1. Use template structures that worked well in similar page types
+      2. Follow form binding patterns from successful migrations
+      3. Apply validation display strategies that achieved high user satisfaction
+      4. Incorporate layout patterns that improved maintainability scores
+      5. Use internationalization approaches proven successful in similar domains
+      6. Apply accessibility patterns that enhanced usability metrics
+
+      REQUIREMENTS:
+      - Apply the most successful patterns from memory
+      - Ensure compatibility with established project conventions
+      - Generate clean, production-ready Thymeleaf template
+      - Include comprehensive accessibility and validation features
+      - Follow performance best practices from learned patterns
+
+      Generate the enhanced Thymeleaf template using learned patterns:
+
+    parameters:
+      - source_code
+      - page_type
+      - business_domain
+      - complexity
+      - learning_patterns
+      - successful_examples
+      - similarity_score
+
+validation:
+  critical_success_indicators:
+    - "Thymeleaf template parses without syntax errors"
+    - "All Struts tag libraries completely removed (no <%@ taglib %> directives)"
+    - "Form binding correctly implemented with th:object and th:field"
+    - "Validation error display functional with th:errors and #fields utility"
+    - "CSRF protection included in all forms"
+    - "Internationalization working with #{message.key} syntax"
+    - "Layout fragments properly structured and reusable"
+    - "Semantic HTML5 elements used throughout"
+    - "Bootstrap 5 or modern CSS framework properly integrated"
+    - "No JSP directives, scriptlets, or expressions remain"
+    
+  quality_metrics:
+    - "Responsive design works across all device sizes"
+    - "Accessibility (ARIA) attributes included for screen readers"
+    - "Performance optimized with proper resource loading"
+    - "SEO-friendly structure with proper meta tags"
+    - "Progressive enhancement with graceful JavaScript degradation"
+    - "Content Security Policy compliant (no inline scripts/styles)"
+    - "Modern web standards compliance (HTML5, CSS3, ES6+)"
+    - "Cross-browser compatibility maintained"
+    - "Template maintainability and readability improved"
+    - "User experience enhanced over original JSP implementation"
+
+  learning_metrics:
+    - "Template rendering performance compared to JSP"
+    - "Developer productivity improvement in maintenance"
+    - "User interface responsiveness and accessibility scores"
+    - "Code maintainability and reusability metrics"
+    - "Cross-browser compatibility test results"
+    - "SEO and performance audit scores"
+
+examples:
+  struts_jsp_input:
+    page_type: "user_form"
+    business_domain: "user_management"
+    complexity: "medium"
+    form_elements: ["text_input", "select", "checkbox", "validation"]
+    ui_framework: "bootstrap5"
+    detected_patterns: ["struts_form", "bean_write", "logic_iterate", "message_resources", "error_handling"]
+    source_code: |
+      <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+      <%@ taglib uri="http://struts.apache.org/tags-html" prefix="html" %>
+      <%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean" %>
+      <%@ taglib uri="http://struts.apache.org/tags-logic" prefix="logic" %>
+      
+      <html>
+      <head>
+          <title><bean:message key="title.user.form"/></title>
+          <link rel="stylesheet" type="text/css" href="styles.css">
+      </head>
+      <body>
+          <h1><bean:message key="heading.user.form"/></h1>
+          
+          <html:errors/>
+          
+          <html:form action="/user/save" method="post">
+              <table>
+                  <tr>
+                      <td><bean:message key="label.firstName"/>:</td>
+                      <td>
+                          <html:text property="firstName" size="30" maxlength="50"/>
+                          <html:errors property="firstName"/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td><bean:message key="label.email"/>:</td>
+                      <td>
+                          <html:text property="email" size="30"/>
+                          <html:errors property="email"/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td><bean:message key="label.country"/>:</td>
+                      <td>
+                          <html:select property="country">
+                              <html:option value=""><bean:message key="option.select.country"/></html:option>
+                              <html:options collection="countries" property="code" labelProperty="name"/>
+                          </html:select>
+                          <html:errors property="country"/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td><bean:message key="label.active"/>:</td>
+                      <td><html:checkbox property="active"/></td>
+                  </tr>
+                  <tr>
+                      <td colspan="2">
+                          <html:submit value="Save"/>
+                          <html:cancel value="Cancel"/>
+                      </td>
+                  </tr>
+              </table>
+          </html:form>
+          
+          <logic:present name="users">
+              <h2><bean:message key="heading.user.list"/></h2>
+              <table border="1">
+                  <tr>
+                      <th><bean:message key="column.name"/></th>
+                      <th><bean:message key="column.email"/></th>
+                      <th><bean:message key="column.country"/></th>
+                      <th><bean:message key="column.status"/></th>
+                  </tr>
+                  <logic:iterate name="users" id="user">
+                      <tr>
+                          <td><bean:write name="user" property="firstName"/></td>
+                          <td><bean:write name="user" property="email"/></td>
+                          <td><bean:write name="user" property="countryName"/></td>
+                          <td>
+                              <logic:equal name="user" property="active" value="true">
+                                  <bean:message key="status.active"/>
+                              </logic:equal>
+                              <logic:equal name="user" property="active" value="false">
+                                  <bean:message key="status.inactive"/>
+                              </logic:equal>
+                          </td>
+                      </tr>
+                  </logic:iterate>
+              </table>
+          </logic:present>
+      </body>
+      </html>
+
+  expected_thymeleaf_output: |
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org" 
+          xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+          layout:decorate="~{layouts/main}">
+    <head>
+        <title th:text="#{title.user.form}">User Form</title>
+        <meta name="description" th:content="#{meta.user.form.description}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+    <body>
+        <main layout:fragment="content">
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card shadow">
+                            <div class="card-header bg-primary text-white">
+                                <h1 class="card-title mb-0" th:text="#{heading.user.form}">User Form</h1>
+                            </div>
+                            <div class="card-body">
+                                <!-- Global Error Messages -->
+                                <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger" role="alert">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div th:each="error : ${#fields.globalErrors()}" th:text="${error}">Global error</div>
+                                </div>
+                                
+                                <!-- Success Message -->
+                                <div th:if="${success}" class="alert alert-success" role="alert">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <span th:text="${success}">Success message</span>
+                                </div>
+                                
+                                <!-- User Form -->
+                                <form th:action="@{/user/save}" th:object="${userForm}" method="post" 
+                                      class="needs-validation" novalidate>
+                                    
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="firstName" class="form-label" th:text="#{label.firstName}">First Name</label>
+                                                <input type="text" th:field="*{firstName}" class="form-control" 
+                                                       th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid' : ''"
+                                                       maxlength="50" required aria-describedby="firstNameHelp" />
+                                                <div th:if="${#fields.hasErrors('firstName')}" 
+                                                     th:errors="*{firstName}" class="invalid-feedback"></div>
+                                                <div id="firstNameHelp" class="form-text" th:text="#{help.firstName}">
+                                                    Enter your first name (required)
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="email" class="form-label" th:text="#{label.email}">Email</label>
+                                                <input type="email" th:field="*{email}" class="form-control"
+                                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                                                       required aria-describedby="emailHelp" />
+                                                <div th:if="${#fields.hasErrors('email')}" 
+                                                     th:errors="*{email}" class="invalid-feedback"></div>
+                                                <div id="emailHelp" class="form-text" th:text="#{help.email}">
+                                                    Enter a valid email address
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="country" class="form-label" th:text="#{label.country}">Country</label>
+                                                <select th:field="*{country}" class="form-select"
+                                                        th:classappend="${#fields.hasErrors('country')} ? 'is-invalid' : ''"
+                                                        required aria-describedby="countryHelp">
+                                                    <option value="" th:text="#{option.select.country}">Select Country</option>
+                                                    <option th:each="country : ${countries}" 
+                                                            th:value="${country.code}" 
+                                                            th:text="${country.name}">Country Name</option>
+                                                </select>
+                                                <div th:if="${#fields.hasErrors('country')}" 
+                                                     th:errors="*{country}" class="invalid-feedback"></div>
+                                                <div id="countryHelp" class="form-text" th:text="#{help.country}">
+                                                    Select your country of residence
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <div class="form-check">
+                                                    <input type="checkbox" th:field="*{active}" 
+                                                           class="form-check-input" id="active" />
+                                                    <label class="form-check-label" for="active" th:text="#{label.active}">Active User</label>
+                                                </div>
+                                                <div class="form-text" th:text="#{help.active}">
+                                                    Check if this user account should be active
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <a th:href="@{/users}" class="btn btn-outline-secondary me-md-2" 
+                                           th:text="#{button.cancel}">Cancel</a>
+                                        <button type="submit" class="btn btn-primary" th:text="#{button.save}">
+                                            <i class="fas fa-save me-1"></i>Save User
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- User List Section -->
+                        <div th:if="${users != null and not #lists.isEmpty(users)}" class="card shadow mt-4">
+                            <div class="card-header bg-secondary text-white">
+                                <h2 class="card-title mb-0" th:text="#{heading.user.list}">User List</h2>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover mb-0">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th scope="col" th:text="#{column.name}">Name</th>
+                                                <th scope="col" th:text="#{column.email}">Email</th>
+                                                <th scope="col" th:text="#{column.country}">Country</th>
+                                                <th scope="col" th:text="#{column.status}">Status</th>
+                                                <th scope="col" th:text="#{column.actions}">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="user : ${users}">
+                                                <td th:text="${user.firstName}">First Name</td>
+                                                <td>
+                                                    <a th:href="'mailto:' + ${user.email}" th:text="${user.email}">
+                                                        email@example.com
+                                                    </a>
+                                                </td>
+                                                <td th:text="${user.countryName}">Country</td>
+                                                <td>
+                                                    <span th:if="${user.active}" 
+                                                          class="badge bg-success" th:text="#{status.active}">
+                                                        <i class="fas fa-check-circle me-1"></i>Active
+                                                    </span>
+                                                    <span th:unless="${user.active}" 
+                                                          class="badge bg-secondary" th:text="#{status.inactive}">
+                                                        <i class="fas fa-times-circle me-1"></i>Inactive
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group" role="group" aria-label="User actions">
+                                                        <a th:href="@{/users/edit(id=${user.id})}" 
+                                                           class="btn btn-sm btn-outline-primary" 
+                                                           th:title="#{button.edit.title}">
+                                                            <i class="fas fa-edit"></i>
+                                                            <span class="d-none d-md-inline" th:text="#{button.edit}">Edit</span>
+                                                        </a>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                                th:onclick="'confirmDelete(' + ${user.id} + ')'"
+                                                                th:title="#{button.delete.title}">
+                                                            <i class="fas fa-trash"></i>
+                                                            <span class="d-none d-md-inline" th:text="#{button.delete}">Delete</span>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Additional JavaScript -->
+        <div layout:fragment="extra-js">
+            <script th:inline="javascript">
+                function confirmDelete(userId) {
+                    if (confirm([[#{confirm.delete.user}]])) {
+                        window.location.href = /*[[@{/users/delete(id=__${userId}__)}]]*/ '/users/delete?id=' + userId;
+                    }
+                }
+                
+                // Form validation enhancement
+                (function() {
+                    'use strict';
+                    window.addEventListener('load', function() {
+                        var forms = document.getElementsByClassName('needs-validation');
+                        var validation = Array.prototype.filter.call(forms, function(form) {
+                            form.addEventListener('submit', function(event) {
+                                if (form.checkValidity() === false) {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                }
+                                form.classList.add('was-validated');
+                            }, false);
+                        });
+                    }, false);
+                })();
+            </script>
+        </div>
+    </body>
+    </html>
+
+  complex_jsp_input:
+    page_type: "dashboard"
+    business_domain: "admin_panel"
+    complexity: "high"
+    form_elements: ["search_form", "data_table", "pagination", "modals"]
+    ui_framework: "bootstrap5"
+    detected_patterns: ["tiles_layout", "multiple_forms", "ajax_calls", "dynamic_content"]
+    source_code: |
+      <%@ page contentType="text/html;charset=UTF-8" %>
+      <%@ taglib uri="http://struts.apache.org/tags-html" prefix="html" %>
+      <%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean" %>
+      <%@ taglib uri="http://struts.apache.org/tags-logic" prefix="logic" %>
+      <%@ taglib uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>
+      
+      <tiles:insert page="/layout/main.jsp">
+          <tiles:put name="title"><bean:message key="title.admin.dashboard"/></tiles:put>
+          <tiles:put name="content">
+              <div class="dashboard">
+                  <h1><bean:message key="heading.dashboard"/></h1>
+                  
+                  <!-- Search Form -->
+                  <html:form action="/admin/search" method="get">
+                      <table>
+                          <tr>
+                              <td><bean:message key="label.search"/>:</td>
+                              <td><html:text property="query" size="30"/></td>
+                              <td><html:submit value="Search"/></td>
+                          </tr>
+                      </table>
+                  </html:form>
+                  
+                  <!-- Statistics -->
+                  <div class="stats">
+                      <logic:present name="statistics">
+                          <h2><bean:message key="heading.statistics"/></h2>
+                          <p>Total Users: <bean:write name="statistics" property="totalUsers"/></p>
+                          <p>Active Users: <bean:write name="statistics" property="activeUsers"/></p>
+                      </logic:present>
+                  </div>
+                  
+                  <!-- Recent Activity -->
+                  <logic:present name="activities">
+                      <h2><bean:message key="heading.recent.activity"/></h2>
+                      <table border="1">
+                          <tr>
+                              <th><bean:message key="column.user"/></th>
+                              <th><bean:message key="column.action"/></th>
+                              <th><bean:message key="column.timestamp"/></th>
+                          </tr>
+                          <logic:iterate name="activities" id="activity">
+                              <tr>
+                                  <td><bean:write name="activity" property="userName"/></td>
+                                  <td><bean:write name="activity" property="action"/></td>
+                                  <td><bean:write name="activity" property="timestamp" format="yyyy-MM-dd HH:mm"/></td>
+                              </tr>
+                          </logic:iterate>
+                      </table>
+                  </logic:present>
+              </div>
+          </tiles:put>
+      </tiles:insert>
+
+  expected_complex_output: |
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org" 
+          xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+          layout:decorate="~{layouts/admin}">
+    <head>
+        <title th:text="#{title.admin.dashboard}">Admin Dashboard</title>
+        <meta name="description" th:content="#{meta.dashboard.description}" />
+    </head>
+    <body>
+        <main layout:fragment="content">
+            <div class="container-fluid">
+                <!-- Dashboard Header -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2" th:text="#{heading.dashboard}">Dashboard</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                    onclick="refreshDashboard()" th:text="#{button.refresh}">Refresh</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Search Section -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-search me-2"></i>
+                                <span th:text="#{heading.search}">Search</span>
+                            </div>
+                            <div class="card-body">
+                                <form th:action="@{/admin/search}" method="get" class="row g-3">
+                                    <div class="col-md-8">
+                                        <label for="query" class="form-label" th:text="#{label.search}">Search</label>
+                                        <input type="text" name="query" id="query" class="form-control" 
+                                               th:value="${param.query}" th:placeholder="#{placeholder.search}" />
+                                    </div>
+                                    <div class="col-md-4 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-primary w-100" th:text="#{button.search}">
+                                            <i class="fas fa-search me-1"></i>Search
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Statistics Cards -->
+                <div th:if="${statistics != null}" class="row mb-4">
+                    <div class="col-12">
+                        <h2 class="h4 mb-3" th:text="#{heading.statistics}">Statistics</h2>
+                    </div>
+                    <div class="col-md-6 col-xl-3 mb-4">
+                        <div class="card bg-primary text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <div class="text-xs font-weight-bold text-uppercase mb-1" 
+                                             th:text="#{stat.total.users}">Total Users</div>
+                                        <div class="h5 mb-0 font-weight-bold" th:text="${statistics.totalUsers}">0</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xl-3 mb-4">
+                        <div class="card bg-success text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <div class="text-xs font-weight-bold text-uppercase mb-1" 
+                                             th:text="#{stat.active.users}">Active Users</div>
+                                        <div class="h5 mb-0 font-weight-bold" th:text="${statistics.activeUsers}">0</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-user-check fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity Table -->
+                <div th:if="${activities != null and not #lists.isEmpty(activities)}" class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-clock me-2"></i>
+                                <span th:text="#{heading.recent.activity}">Recent Activity</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover mb-0">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th scope="col" th:text="#{column.user}">User</th>
+                                                <th scope="col" th:text="#{column.action}">Action</th>
+                                                <th scope="col" th:text="#{column.timestamp}">Timestamp</th>
+                                                <th scope="col" th:text="#{column.details}">Details</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="activity : ${activities}">
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar-sm me-2">
+                                                            <span class="avatar-initial rounded-circle bg-primary" 
+                                                                  th:text="${#strings.substring(activity.userName, 0, 1)}">U</span>
+                                                        </div>
+                                                        <span th:text="${activity.userName}">User Name</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge" 
+                                                          th:classappend="${activity.action == 'LOGIN'} ? 'bg-success' : 
+                                                                          (${activity.action == 'LOGOUT'} ? 'bg-info' : 'bg-warning')"
+                                                          th:text="${activity.action}">Action</span>
+                                                </td>
+                                                <td>
+                                                    <span th:text="${#temporals.format(activity.timestamp, 'yyyy-MM-dd HH:mm:ss')}"
+                                                          th:title="${#temporals.format(activity.timestamp, 'EEEE, MMMM dd, yyyy \'at\' HH:mm:ss')}">
+                                                        Timestamp
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                                            th:onclick="'showActivityDetails(' + ${activity.id} + ')'"
+                                                            th:text="#{button.view.details}">View Details</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Additional JavaScript -->
+        <div layout:fragment="extra-js">
+            <script th:inline="javascript">
+                function refreshDashboard() {
+                    window.location.reload();
+                }
+                
+                function showActivityDetails(activityId) {
+                    // Implementation for showing activity details modal
+                    fetch('/admin/activity/' + activityId)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Show modal with activity details
+                            console.log('Activity details:', data);
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+                
+                // Auto-refresh dashboard every 5 minutes
+                setInterval(function() {
+                    refreshDashboard();
+                }, 300000);
+            </script>
+        </div>
+    </body>
+    </html>

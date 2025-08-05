@@ -1,0 +1,1003 @@
+# Configuration Migration Prompts
+metadata:
+  name: "Struts 1 to Spring Boot 3 Configuration Migration"
+  description: "Convert Struts 1 and other legacy configuration to modern Spring Boot 3 configuration"
+  version: "2.0"
+  author: "AI Migration System"
+  last_updated: "2025-08-02"
+  target_framework: "Spring Boot 3.3+"
+  target_java: "Java 21 LTS"
+  success_criteria:
+    - "application.yml or application.properties fully defined"
+    - "Java @Configuration classes with proper @Bean methods"
+    - "No legacy XML configuration files or imports remain"
+    - "Leverage Spring Boot auto-configuration by default"
+    - "Support for multiple environments via profiles"
+    - "Externalized secrets and credentials via Spring Cloud Config or vault"
+    - "Comprehensive MessageSource for i18n"
+    - "Centralized exception handling via @ControllerAdvice"
+    - "Security config migrated to Spring Security DSL"
+    - "Jakarta namespace conversion completed (no javax.* imports)"
+    - "Database configuration with modern connection pooling"
+    - "Observability and monitoring configuration included"
+
+templates:
+  comprehensive_config_migration:
+    name: "Comprehensive Struts 1 to Spring Boot 3 Configuration Migration"
+    description: "Full-featured migration with all modern Spring Boot 3.3+ capabilities and Java 21 features"
+    template: |
+      You are an expert Spring Boot 3 configuration architect specializing in modernizing legacy Struts 1 applications to cutting-edge Java 21 and Spring Boot 3.3+ standards.
+
+      MIGRATION CONTEXT:
+      - Source Framework: Struts 1.x configuration (struts-config.xml, hibernate.cfg.xml, web.xml)
+      - Target Framework: Spring Boot 3.3+ with Java 21
+      - Configuration Type: {config_type}
+      - Environment: {target_environment}
+      - Complexity: {complexity}
+      - Integration Requirements: {integration_requirements}
+
+      LEARNING CONTEXT FROM PREVIOUS MIGRATIONS:
+      {learning_context}
+
+      ORIGINAL LEGACY CONFIGURATION:
+      ```xml
+      {source_code}
+      ```
+
+      DETECTED CONFIGURATION PATTERNS:
+      {detected_patterns}
+
+      COMPREHENSIVE MIGRATION REQUIREMENTS:
+
+      1. **NAMESPACE MIGRATION (CRITICAL)**:
+         - Replace ALL javax.* imports with jakarta.* equivalents
+         - javax.servlet.* → jakarta.servlet.*
+         - javax.validation.* → jakarta.validation.*
+         - javax.persistence.* → jakarta.persistence.*
+         - javax.annotation.* → jakarta.annotation.*
+
+      2. **LEGACY XML ELIMINATION**:
+         - Remove struts-config.xml completely
+         - Eliminate hibernate.cfg.xml (convert to application.yml JPA configuration)
+         - Modernize web.xml to Spring Boot embedded server configuration
+         - Remove all XML-based bean definitions and plugin configurations
+         - Eliminate ActionServlet and RequestProcessor configurations
+
+      3. **SPRING BOOT 3 CONFIGURATION PATTERNS**:
+         - Create comprehensive application.yml with environment profiles
+         - Use @Configuration classes for complex bean definitions
+         - Leverage Spring Boot auto-configuration wherever possible
+         - Implement @ConfigurationProperties for typed configuration
+         - Use @Profile annotations for environment-specific beans
+
+      4. **APPLICATION.YML STRUCTURE**:
+         - Server configuration (port, servlet context, compression)
+         - Database configuration with HikariCP connection pooling
+         - JPA/Hibernate properties optimized for performance
+         - Security configuration placeholders
+         - Logging configuration with structured output
+         - Management endpoints for actuator
+         - Message source configuration for i18n
+
+      5. **DATABASE & JPA CONFIGURATION**:
+         - Convert hibernate.cfg.xml to spring.jpa.* properties
+         - Configure modern HikariCP connection pool
+         - Set up proper transaction management
+         - Configure entity scanning and repository packages
+         - Add database migration with Flyway or Liquibase
+         - Implement connection validation and health checks
+
+      6. **WEB CONFIGURATION MIGRATION**:
+         - Remove DispatcherServlet XML configuration (auto-configured)
+         - Convert servlet filters to @Component or FilterRegistrationBean
+         - Migrate servlet mappings to Spring MVC controllers
+         - Convert error pages to @ControllerAdvice exception handling
+         - Update static resource handling configuration
+
+      7. **SECURITY CONFIGURATION**:
+         - Convert security-constraint elements to Spring Security DSL
+         - Implement SecurityFilterChain configuration
+         - Configure authentication and authorization rules
+         - Set up CSRF protection and session management
+         - Add JWT or OAuth2 configuration if needed
+
+      8. **MESSAGE SOURCE & I18N**:
+         - Configure ResourceBundleMessageSource for internationalization
+         - Set up proper encoding (UTF-8) and caching
+         - Configure locale resolution strategies
+         - Add validation message sources
+
+      9. **EXCEPTION HANDLING CONFIGURATION**:
+         - Create @ControllerAdvice for global exception handling
+         - Map Struts global exceptions to Spring exception handlers
+         - Configure error view resolution
+         - Set up structured error responses for APIs
+
+      10. **OBSERVABILITY & MONITORING**:
+          - Configure Spring Boot Actuator endpoints
+          - Set up metrics collection with Micrometer
+          - Configure health indicators for database and external services
+          - Add distributed tracing configuration
+
+      11. **ENVIRONMENT PROFILES**:
+          - Create development, test, and production profiles
+          - Externalize environment-specific properties
+          - Configure different databases per environment
+          - Set up logging levels per environment
+
+      12. **MODERN JAVA 21 FEATURES**:
+          - Use Records for configuration property classes
+          - Leverage pattern matching in configuration logic
+          - Apply virtual threads configuration
+          - Use text blocks for multi-line property values
+
+      CONFIGURATION MAPPING GUIDE:
+      ```yaml
+      # Legacy Pattern → Modern Spring Boot 3 Pattern
+      
+      # Struts Action Mappings
+      <action path="/users" type="UserAction"> → @RequestMapping("/users") in Controller
+      
+      # Global Forwards
+      <global-forwards>
+        <forward name="login" path="/login.jsp"/>
+      </global-forwards>
+      → 
+      @Configuration
+      public class WebMvcConfig implements WebMvcConfigurer {
+        @Override
+        public void addViewControllers(ViewControllerRegistry registry) {
+          registry.addViewController("/login").setViewName("login");
+        }
+      }
+      
+      # Message Resources
+      <message-resources parameter="ApplicationResources"/>
+      →
+      spring:
+        messages:
+          basename: ApplicationResources
+          encoding: UTF-8
+          cache-duration: PT1H
+      
+      # Hibernate Configuration
+      <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+      →
+      spring:
+        jpa:
+          database-platform: org.hibernate.dialect.MySQLDialect
+          hibernate:
+            ddl-auto: validate
+          properties:
+            hibernate:
+              format_sql: true
+              use_sql_comments: true
+      
+      # Database Connection
+      <property name="hibernate.connection.url">jdbc:mysql://localhost/db</property>
+      →
+      spring:
+        datasource:
+          url: jdbc:mysql://localhost/db
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          hikari:
+            maximum-pool-size: 20
+            minimum-idle: 5
+            connection-timeout: 30000
+      ```
+
+      OUTPUT REQUIREMENTS:
+      - Complete application.yml with all necessary Spring Boot 3 properties
+      - Java @Configuration classes using modern Spring Boot 3 patterns
+      - @ControllerAdvice for exception handling
+      - All Jakarta namespace imports (NO javax.* imports)
+      - Modern Java 21 syntax and Spring Boot 3 patterns
+      - Environment profile support (dev, test, prod)
+      - Production-ready configuration with proper externalization
+      - No XML configuration files required
+      - Include all necessary Spring Boot starter dependencies
+
+      EXAMPLE TRANSFORMATION PATTERN:
+      ```yaml
+      # application.yml
+      server:
+        port: 8080
+        servlet:
+          context-path: /myapp
+        compression:
+          enabled: true
+        error:
+          include-stacktrace: on_param
+
+      spring:
+        application:
+          name: migrated-app
+        
+        datasource:
+          url: jdbc:mysql://localhost:3306/mydb
+          username: ${DB_USERNAME:user}
+          password: ${DB_PASSWORD:password}
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          hikari:
+            maximum-pool-size: 20
+            minimum-idle: 5
+            connection-timeout: 30000
+            idle-timeout: 300000
+            max-lifetime: 1200000
+        
+        jpa:
+          hibernate:
+            ddl-auto: validate
+          database-platform: org.hibernate.dialect.MySQLDialect
+          show-sql: false
+          properties:
+            hibernate:
+              format_sql: true
+              use_sql_comments: true
+              jdbc:
+                batch_size: 20
+              cache:
+                use_second_level_cache: true
+                use_query_cache: true
+        
+        messages:
+          basename: ApplicationResources
+          encoding: UTF-8
+          cache-duration: PT1H
+        
+        security:
+          user:
+            name: admin
+            password: ${ADMIN_PASSWORD:admin}
+        
+        mvc:
+          view:
+            prefix: /WEB-INF/views/
+            suffix: .html
+          pathmatch:
+            matching-strategy: ant_path_matcher
+
+      management:
+        endpoints:
+          web:
+            exposure:
+              include: health,info,metrics
+        endpoint:
+          health:
+            show-details: when_authorized
+
+      logging:
+        level:
+          org.springframework.security: DEBUG
+          org.hibernate.SQL: DEBUG
+        pattern:
+          console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+        file:
+          name: logs/application.log
+
+      ---
+      spring:
+        config:
+          activate:
+            on-profile: development
+        
+        datasource:
+          url: jdbc:h2:mem:devdb
+          driver-class-name: org.h2.Driver
+        
+        jpa:
+          hibernate:
+            ddl-auto: create-drop
+          show-sql: true
+        
+        h2:
+          console:
+            enabled: true
+
+      ---
+      spring:
+        config:
+          activate:
+            on-profile: production
+        
+        jpa:
+          hibernate:
+            ddl-auto: validate
+          show-sql: false
+        
+        datasource:
+          hikari:
+            maximum-pool-size: 50
+            minimum-idle: 10
+
+      logging:
+        level:
+          org.springframework.security: WARN
+          org.hibernate.SQL: WARN
+        file:
+          name: /var/log/myapp/application.log
+      ```
+
+      ```java
+      // WebMvcConfig.java
+      @Configuration
+      @EnableWebMvc
+      public class WebMvcConfig implements WebMvcConfigurer {
+          
+          @Override
+          public void addViewControllers(ViewControllerRegistry registry) {
+              registry.addViewController("/").setViewName("home");
+              registry.addViewController("/login").setViewName("login");
+          }
+          
+          @Bean
+          public MessageSource messageSource() {
+              ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+              messageSource.setBasenames("ApplicationResources", "ValidationMessages");
+              messageSource.setDefaultEncoding("UTF-8");
+              messageSource.setCacheSeconds(3600);
+              return messageSource;
+          }
+          
+          @Bean
+          public LocaleResolver localeResolver() {
+              SessionLocaleResolver resolver = new SessionLocaleResolver();
+              resolver.setDefaultLocale(Locale.ENGLISH);
+              return resolver;
+          }
+          
+          @Override
+          public void addResourceHandlers(ResourceHandlerRegistry registry) {
+              registry.addResourceHandler("/static/**")
+                     .addResourceLocations("classpath:/static/")
+                     .setCacheControl(CacheControl.maxAge(Duration.ofDays(365)));
+          }
+      }
+      
+      // GlobalExceptionHandler.java
+      @ControllerAdvice
+      public class GlobalExceptionHandler {
+          
+          private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+          
+          @ExceptionHandler(DataAccessException.class)
+          public String handleDatabaseError(DataAccessException ex, Model model) {
+              logger.error("Database error occurred", ex);
+              model.addAttribute("error", "A database error occurred. Please try again.");
+              return "error/database-error";
+          }
+          
+          @ExceptionHandler(ValidationException.class)
+          public String handleValidationError(ValidationException ex, Model model) {
+              model.addAttribute("error", ex.getMessage());
+              return "error/validation-error";
+          }
+          
+          @ExceptionHandler(Exception.class)
+          public String handleGenericError(Exception ex, Model model) {
+              logger.error("Unexpected error occurred", ex);
+              model.addAttribute("error", "An unexpected error occurred. Please contact support.");
+              return "error/general-error";
+          }
+      }
+      ```
+
+      Generate the complete, modern Spring Boot 3 configuration using Java 21 features:
+
+    parameters:
+      - config_type
+      - target_environment
+      - complexity
+      - integration_requirements
+      - source_code
+      - detected_patterns
+      - learning_context
+
+  struts_config_migration:
+    name: "Struts Configuration Migration"
+    description: "Convert struts-config.xml and related legacy XML to Spring Boot 3 configuration"
+    template: |
+      You are an expert Spring Boot 3 configuration architect. Migrate legacy Struts 1 XML and related configs to modern Spring Boot 3.
+
+      MIGRATION CONTEXT:
+      - Source Config: struts-config.xml (+ tiles-defs if present)
+      - Target Config: application.yml + Java @Configuration classes
+      - Environment Profiles: {target_environment}
+      - Complexity: {complexity}
+
+      ORIGINAL STRUTS CONFIG:
+      ```xml
+      {source_code}
+      ```
+
+      DETECTED PATTERNS:
+      {detected_patterns}
+
+      TRANSFORMATION REQUIREMENTS:
+      1. **Action Mappings** → Remove; controllers handle @RequestMapping  
+      2. **Global Forwards** → Configure view controller registry in WebMvcConfigurer  
+      3. **Form-bean definitions** → Migrate to model classes with @Validated  
+      4. **Plugins** → Convert <plug-in> entries to @Bean in @Configuration  
+      5. **Message Resources** → Configure MessageSource bean and application.yml  
+      6. **Tiles definitions** → Migrate to Thymeleaf Layout Dialect or Spring-TilesConfigurer  
+      7. **Exception handling** → Global @ControllerAdvice with @ExceptionHandler  
+      8. **Validation** → Jakarta Bean Validation via application.yml and @Configuration  
+
+      SPRING BOOT MAPPING EXAMPLES:
+      - `<action path="/login">` → `registry.addViewController("/login").setViewName("login")`  
+      - `<global-forwards>` → view controllers or RedirectView in config  
+      - `<message-resources parameter="ApplicationResources"/>` →  
+         ```yaml
+         spring:
+           messages:
+             basename: ApplicationResources
+             encoding: UTF-8
+         ```
+         ```java
+         @Bean
+         public MessageSource messageSource() {
+           ResourceBundleMessageSource ms = new ResourceBundleMessageSource();
+           ms.setBasename("ApplicationResources");
+           ms.setDefaultEncoding("UTF-8");
+           return ms;
+         }
+         ```  
+
+      GENERATE:
+      - Complete application.yml with server, spring.mvc.view, spring.messages profiles  
+      - Java @Configuration classes for view controllers, MessageSource, TilesConfigurer if needed  
+      - @ControllerAdvice for exception mapping  
+      - No XML configuration files
+
+    parameters:
+      - source_code
+      - detected_patterns
+      - target_environment
+      - complexity
+
+  hibernate_config_migration:
+    name: "Hibernate Configuration Migration"
+    description: "Convert hibernate.cfg.xml to Spring Boot 3 JPA configuration"
+    template: |
+      As a Spring Boot 3 JPA expert, convert legacy hibernate.cfg.xml to application.yml + @Configuration.
+
+      CONTEXT:
+      - Database: {database_type}
+      - Connection Pool: {connection_pool}
+      - Mapping Strategy: {mapping_strategy}
+
+      ORIGINAL HIBERNATE CONFIG:
+      ```xml
+      {source_code}
+      ```
+
+      REQUIREMENTS:
+      1. **DataSource** → spring.datasource.* in application.yml with HikariCP  
+      2. **Dialect & DDL** → spring.jpa.database-platform + spring.jpa.hibernate.ddl-auto  
+      3. **Show SQL** → spring.jpa.show-sql and formatting properties  
+      4. **Entity scanning** → @EntityScan or spring.jpa.packages-to-scan  
+      5. **Transaction management** → spring.transaction.* or @EnableTransactionManagement  
+      6. **Performance tuning** → Configure hibernate.cache.* and connection pool properties  
+      7. **Validation** → Jakarta Bean Validation integration  
+
+      SPRING BOOT MAPPING:
+      - `hibernate.connection.url` → `spring.datasource.url`  
+      - `hibernate.connection.driver_class` → `spring.datasource.driver-class-name`  
+      - `hibernate.dialect` → `spring.jpa.database-platform`  
+      - `hibernate.hbm2ddl.auto` → `spring.jpa.hibernate.ddl-auto`  
+      - `hibernate.show_sql` → `spring.jpa.show-sql`  
+      - `hibernate.connection.pool_size` → `spring.datasource.hikari.maximum-pool-size`  
+
+      OUTPUT:
+      - Complete application.yml snippet for JPA with HikariCP configuration  
+      - Java @Configuration class for advanced customization if needed  
+      - Environment-specific database configurations
+      - Connection validation and health check setup
+
+    parameters:
+      - database_type
+      - connection_pool
+      - mapping_strategy
+      - source_code
+
+  web_xml_migration:
+    name: "web.xml Migration"
+    description: "Convert web.xml to Spring Boot 3 auto configuration"
+    template: |
+      You are a Spring Boot 3 web configuration specialist. Transform legacy web.xml into Spring Boot settings.
+
+      CONTEXT:
+      - Servlet mappings: {servlet_mappings}  
+      - Filters: {filter_patterns}  
+      - Security constraints: {security_config}
+
+      ORIGINAL WEB.XML:
+      ```xml
+      {source_code}
+      ```
+
+      REQUIREMENTS:
+      1. **DispatcherServlet** → auto-configured (remove servlet definition)  
+      2. **Servlet-mapping** → controllers and view controllers  
+      3. **Filters** → @Bean FilterRegistrationBean or @Component filters  
+      4. **Security constraints** → Spring Security configuration in SecurityFilterChain  
+      5. **Context-params** → externalized in application.yml  
+      6. **Error pages** → @ControllerAdvice or embedded server config  
+      7. **Session config** → application.yml server.servlet.session properties  
+
+      SPRING BOOT MAPPING:
+      - `<servlet-mapping>` → handled via @RequestMapping in controllers  
+      - `<filter>` →  
+         ```java
+         @Bean
+         public FilterRegistrationBean<MyFilter> myFilter() {
+           FilterRegistrationBean<MyFilter> registration = new FilterRegistrationBean<>();
+           registration.setFilter(new MyFilter());
+           registration.addUrlPatterns("/*");
+           return registration;
+         }
+         ```  
+      - `<error-page>` → @ControllerAdvice or embedded server config in application.yml  
+      - `<security-constraint>` → Spring Security Java configuration  
+
+      OUTPUT:
+      - application.yml for server, context-params, session, error handling  
+      - Java @Configuration for filters, security, error pages  
+      - Spring Security Java config for security constraints  
+      - @ControllerAdvice for custom error handling
+
+    parameters:
+      - servlet_mappings
+      - filter_patterns
+      - security_config
+      - source_code
+
+  learning_enhanced_config_migration:
+    name: "Learning-Enhanced Configuration Migration"
+    description: "Migration using patterns from successful previous configuration conversions"
+    template: |
+      You are an expert Spring Boot 3 configuration architect with access to successful patterns from previous configuration migrations.
+
+      SUCCESSFUL PATTERNS FROM MEMORY:
+      {learning_patterns}
+
+      PREVIOUS SUCCESSFUL CONVERSIONS:
+      {successful_examples}
+
+      CURRENT MIGRATION TASK:
+      Convert this legacy configuration using proven patterns from similar successful migrations.
+
+      SOURCE CONFIGURATION:
+      ```xml
+      {source_code}
+      ```
+
+      CONTEXT:
+      - Configuration Type: {config_type}
+      - Environment: {target_environment}
+      - Complexity: {complexity}
+      - Similar Previous Success Score: {similarity_score}
+
+      APPLY LEARNED PATTERNS:
+      1. Use configuration patterns that worked well in similar environments
+      2. Follow property naming conventions from successful migrations
+      3. Apply security configurations that achieved high validation scores
+      4. Incorporate database configurations that prevented runtime issues
+      5. Use message source patterns proven successful in similar contexts
+      6. Apply filter and exception handling approaches from successful projects
+
+      REQUIREMENTS:
+      - Apply the most successful patterns from memory
+      - Ensure compatibility with established project conventions
+      - Generate clean, production-ready Spring Boot 3 configuration
+      - Include comprehensive environment profile support
+      - Follow security best practices from learned patterns
+
+      Generate the enhanced configuration using learned patterns:
+
+    parameters:
+      - source_code
+      - config_type
+      - target_environment
+      - complexity
+      - learning_patterns
+      - successful_examples
+      - similarity_score
+
+validation:
+  critical_success_indicators:
+    - "application.yml parses without errors and follows Spring Boot conventions"
+    - "Java @Configuration classes compile with proper annotations"
+    - "All legacy XML configuration elements successfully migrated"
+    - "Environment-specific profiles properly configured (dev, test, prod)"
+    - "Spring Boot auto-configuration leveraged maximally"
+    - "Jakarta namespace conversion completed (no javax.* references)"
+    - "Database configuration with modern HikariCP connection pooling"
+    - "Security configuration migrated to Spring Security DSL"
+    - "Message source properly configured for internationalization"
+    - "Exception handling centralized via @ControllerAdvice"
+    
+  quality_metrics:
+    - "No legacy XML configuration files remain in project"
+    - "MessageSource bean properly configured with UTF-8 encoding"
+    - "View resolvers correctly configured for template engine"
+    - "JPA and DataSource configuration optimized for performance"
+    - "Filters and security constraints correctly registered"
+    - "Environment profiles properly isolate dev, test, prod settings"
+    - "Externalized configuration for secrets and environment-specific values"
+    - "Comprehensive error handling and logging configuration"
+    - "Actuator endpoints configured for monitoring and health checks"
+    - "Thread-safe configuration compatible with virtual threads"
+
+  learning_metrics:
+    - "Configuration compilation and startup success rate"
+    - "Database connection pool performance improvement"
+    - "Security configuration completeness score"
+    - "Message source and i18n functionality accuracy"
+    - "Exception handling coverage and effectiveness"
+    - "Environment profile switching reliability"
+
+examples:
+  struts_config_input:
+    config_type: "struts"
+    complexity: "medium"
+    target_environment: "production"
+    detected_patterns: ["action_mappings", "global_forwards", "message_resources", "exception_handling"]
+    source_code: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <struts-config>
+          <action-mappings>
+              <action path="/login" type="com.example.LoginAction">
+                  <forward name="success" path="/home.jsp"/>
+                  <forward name="failure" path="/login.jsp"/>
+              </action>
+              <action path="/users" type="com.example.UserAction">
+                  <forward name="list" path="/users/list.jsp"/>
+                  <forward name="edit" path="/users/edit.jsp"/>
+              </action>
+          </action-mappings>
+          
+          <global-forwards>
+              <forward name="login" path="/login.jsp"/>
+              <forward name="home" path="/home.jsp"/>
+              <forward name="error" path="/error.jsp"/>
+          </global-forwards>
+          
+          <global-exceptions>
+              <exception key="error.database" type="java.sql.SQLException" path="/error.jsp"/>
+              <exception key="error.validation" type="ValidationException" path="/validation-error.jsp"/>
+          </global-exceptions>
+          
+          <message-resources parameter="ApplicationResources"/>
+          
+          <plug-in className="org.apache.struts.tiles.TilesPlugin">
+              <set-property property="definitions-config" value="/WEB-INF/tiles-defs.xml"/>
+              <set-property property="moduleAware" value="true"/>
+          </plug-in>
+      </struts-config>
+
+  expected_spring_boot3_output: |
+    # application.yml
+    server:
+      port: 8080
+      servlet:
+        context-path: /myapp
+        session:
+          timeout: PT30M
+          cookie:
+            secure: true
+            http-only: true
+      compression:
+        enabled: true
+        mime-types: text/html,text/css,text/javascript,application/javascript,application/json
+      error:
+        include-stacktrace: on_param
+        include-message: always
+
+    spring:
+      application:
+        name: migrated-struts-app
+      
+      datasource:
+        url: jdbc:mysql://localhost:3306/mydb
+        username: ${DB_USERNAME:user}
+        password: ${DB_PASSWORD:password}
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        hikari:
+          maximum-pool-size: 20
+          minimum-idle: 5
+          connection-timeout: 30000
+          idle-timeout: 300000
+          max-lifetime: 1200000
+          leak-detection-threshold: 60000
+      
+      jpa:
+        hibernate:
+          ddl-auto: validate
+        database-platform: org.hibernate.dialect.MySQLDialect
+        show-sql: false
+        properties:
+          hibernate:
+            format_sql: true
+            use_sql_comments: true
+            jdbc:
+              batch_size: 20
+            cache:
+              use_second_level_cache: true
+              use_query_cache: true
+      
+      messages:
+        basename: ApplicationResources
+        encoding: UTF-8
+        cache-duration: PT1H
+        fallback-to-system-locale: false
+      
+      mvc:
+        view:
+          prefix: /WEB-INF/views/
+          suffix: .html
+        pathmatch:
+          matching-strategy: ant_path_matcher
+      
+      security:
+        user:
+          name: admin
+          password: ${ADMIN_PASSWORD:admin}
+
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: health,info,metrics,env
+      endpoint:
+        health:
+          show-details: when_authorized
+        env:
+          show-values: when_authorized
+
+    logging:
+      level:
+        org.springframework.security: INFO
+        org.hibernate.SQL: INFO
+        com.example: DEBUG
+      pattern:
+        console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+      file:
+        name: logs/application.log
+        max-size: 10MB
+        max-history: 30
+
+    ---
+    spring:
+      config:
+        activate:
+          on-profile: development
+      
+      datasource:
+        url: jdbc:h2:mem:devdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+        driver-class-name: org.h2.Driver
+        username: sa
+        password: 
+      
+      jpa:
+        hibernate:
+          ddl-auto: create-drop
+        show-sql: true
+      
+      h2:
+        console:
+          enabled: true
+          path: /h2-console
+
+    logging:
+      level:
+        org.springframework.security: DEBUG
+        org.hibernate.SQL: DEBUG
+
+    ---
+    spring:
+      config:
+        activate:
+          on-profile: production
+      
+      jpa:
+        hibernate:
+          ddl-auto: validate
+        show-sql: false
+      
+      datasource:
+        hikari:
+          maximum-pool-size: 50
+          minimum-idle: 10
+
+    logging:
+      level:
+        org.springframework.security: WARN
+        org.hibernate.SQL: WARN
+        com.example: INFO
+      file:
+        name: /var/log/myapp/application.log
+
+    # Java Configuration Classes
+
+    # WebMvcConfig.java
+    package com.example.config;
+    
+    import org.springframework.context.MessageSource;
+    import org.springframework.context.annotation.Bean;
+    import org.springframework.context.annotation.Configuration;
+    import org.springframework.context.support.ResourceBundleMessageSource;
+    import org.springframework.http.CacheControl;
+    import org.springframework.web.servlet.LocaleResolver;
+    import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+    import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+    import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+    import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+    
+    import java.time.Duration;
+    import java.util.Locale;
+    
+    /**
+     * Web MVC configuration for the migrated Spring Boot 3 application.
+     * Replaces legacy struts-config.xml global forwards and message resources.
+     */
+    @Configuration
+    public class WebMvcConfig implements WebMvcConfigurer {
+        
+        @Override
+        public void addViewControllers(ViewControllerRegistry registry) {
+            // Global forwards from struts-config.xml
+            registry.addViewController("/").setViewName("home");
+            registry.addViewController("/login").setViewName("login");
+            registry.addViewController("/home").setViewName("home");
+            registry.addViewController("/error").setViewName("error");
+        }
+        
+        @Bean
+        public MessageSource messageSource() {
+            ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+            messageSource.setBasenames("ApplicationResources", "ValidationMessages");
+            messageSource.setDefaultEncoding("UTF-8");
+            messageSource.setCacheSeconds(3600);
+            messageSource.setFallbackToSystemLocale(false);
+            return messageSource;
+        }
+        
+        @Bean
+        public LocaleResolver localeResolver() {
+            SessionLocaleResolver resolver = new SessionLocaleResolver();
+            resolver.setDefaultLocale(Locale.ENGLISH);
+            return resolver;
+        }
+        
+        @Override
+        public void addResourceHandlers(ResourceHandlerRegistry registry) {
+            registry.addResourceHandler("/static/**")
+                   .addResourceLocations("classpath:/static/")
+                   .setCacheControl(CacheControl.maxAge(Duration.ofDays(365)));
+        }
+    }
+
+    # GlobalExceptionHandler.java
+    package com.example.config;
+    
+    import jakarta.servlet.http.HttpServletRequest;
+    import org.slf4j.Logger;
+    import org.slf4j.LoggerFactory;
+    import org.springframework.dao.DataAccessException;
+    import org.springframework.ui.Model;
+    import org.springframework.web.bind.annotation.ControllerAdvice;
+    import org.springframework.web.bind.annotation.ExceptionHandler;
+    import org.springframework.web.servlet.ModelAndView;
+    
+    import java.sql.SQLException;
+    
+    /**
+     * Global exception handler replacing struts-config.xml global-exceptions.
+     * Provides centralized error handling for the entire application.
+     */
+    @ControllerAdvice
+    public class GlobalExceptionHandler {
+        
+        private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+        
+        @ExceptionHandler(SQLException.class)
+        public ModelAndView handleDatabaseError(SQLException ex, HttpServletRequest request) {
+            logger.error("Database error occurred at {}", request.getRequestURI(), ex);
+            
+            ModelAndView mav = new ModelAndView("error");
+            mav.addObject("errorKey", "error.database");
+            mav.addObject("errorMessage", "A database error occurred. Please try again later.");
+            mav.addObject("exception", ex);
+            return mav;
+        }
+        
+        @ExceptionHandler(ValidationException.class)
+        public String handleValidationError(ValidationException ex, Model model, HttpServletRequest request) {
+            logger.warn("Validation error at {}: {}", request.getRequestURI(), ex.getMessage());
+            
+            model.addAttribute("errorKey", "error.validation");
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "validation-error";
+        }
+        
+        @ExceptionHandler(DataAccessException.class)
+        public String handleDataAccessError(DataAccessException ex, Model model, HttpServletRequest request) {
+            logger.error("Data access error at {}", request.getRequestURI(), ex);
+            
+            model.addAttribute("errorKey", "error.database");
+            model.addAttribute("errorMessage", "A data access error occurred. Please contact support.");
+            return "error";
+        }
+        
+        @ExceptionHandler(Exception.class)
+        public String handleGenericError(Exception ex, Model model, HttpServletRequest request) {
+            logger.error("Unexpected error at {}", request.getRequestURI(), ex);
+            
+            model.addAttribute("errorKey", "error.unexpected");
+            model.addAttribute("errorMessage", "An unexpected error occurred. Please contact support.");
+            return "error";
+        }
+    }
+
+  hibernate_config_input:
+    database_type: "mysql"
+    connection_pool: "hikari"
+    mapping_strategy: "annotations"
+    source_code: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <hibernate-configuration>
+          <session-factory>
+              <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+              <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/mydb</property>
+              <property name="hibernate.connection.username">user</property>
+              <property name="hibernate.connection.password">password</property>
+              <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+              <property name="hibernate.hbm2ddl.auto">update</property>
+              <property name="hibernate.show_sql">true</property>
+              <property name="hibernate.format_sql">true</property>
+              <property name="hibernate.connection.pool_size">10</property>
+              <property name="hibernate.cache.use_second_level_cache">true</property>
+              <property name="hibernate.cache.use_query_cache">true</property>
+              
+              <mapping class="com.example.entity.User"/>
+              <mapping class="com.example.entity.Role"/>
+          </session-factory>
+      </hibernate-configuration>
+
+  expected_hibernate_output: |
+    # application.yml - JPA Configuration
+    spring:
+      datasource:
+        url: jdbc:mysql://localhost:3306/mydb
+        username: ${DB_USERNAME:user}
+        password: ${DB_PASSWORD:password}
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        hikari:
+          maximum-pool-size: 20
+          minimum-idle: 5
+          connection-timeout: 30000
+          idle-timeout: 300000
+          max-lifetime: 1200000
+          leak-detection-threshold: 60000
+          pool-name: HikariPool-Main
+      
+      jpa:
+        hibernate:
+          ddl-auto: validate  # Changed from 'update' for production safety
+        database-platform: org.hibernate.dialect.MySQLDialect
+        show-sql: false  # Disabled for production
+        properties:
+          hibernate:
+            format_sql: true
+            use_sql_comments: true
+            jdbc:
+              batch_size: 20
+              fetch_size: 50
+            cache:
+              use_second_level_cache: true
+              use_query_cache: true
+              region:
+                factory_class: org.hibernate.cache.jcache.internal.JCacheRegionFactory
+            generate_statistics: false
+        packages-to-scan: com.example.entity

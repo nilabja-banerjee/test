@@ -1,0 +1,159 @@
+You are converting a Struts `execute()` method into a well-structured Spring Boot controller method.
+
+## Goal:
+Transform the legacy Struts execute() method into a modern Spring Boot REST endpoint while preserving all business logic, request handling, and navigation patterns.
+
+---
+
+## Rules:
+1. Map request parameters (`request.getParameter()`) to `@RequestParam` or `@PathVariable`.
+2. If request uses `setAttribute()`, convert that data into a response DTO or return object.
+3. Replace `return mapping.findForward("X")` with a redirect or appropriate response.
+4. Use `@GetMapping` or `@PostMapping` based on the logic (default: `@GetMapping`).
+5. **PRESERVE ALL BUSINESS LOGIC**: Every if-statement, loop, validation, and calculation must be retained.
+6. **MAINTAIN ERROR HANDLING**: Convert exception handling to Spring patterns.
+7. **KEEP PARAMETER VALIDATION**: Transform Struts validation to Spring validation.
+
+---
+
+## Analysis Context:
+{analysis}
+
+## Original Execute Method:
+```java
+{execute_method_code}
+```
+
+## Target Configuration:
+- Java Version: {target_java_version}
+- HTTP Method Inference: {http_method}
+- Expected Response Type: {response_type}
+
+---
+
+## Transformation Patterns:
+
+### Parameter Mapping:
+```java
+// FROM: String id = request.getParameter("id");
+// TO:   @RequestParam String id
+
+// FROM: String name = request.getParameter("name");  
+// TO:   @RequestParam String name
+
+// FROM: ActionForm form (with properties)
+// TO:   @RequestBody FormDTO formDto OR individual @RequestParam
+```
+
+### Response Handling:
+```java
+// FROM: request.setAttribute("data", value); return mapping.findForward("success");
+// TO:   return ResponseEntity.ok(responseDto);
+
+// FROM: return mapping.findForward("error");
+// TO:   return ResponseEntity.badRequest().body("Error message");
+
+// FROM: return mapping.findForward("redirect");
+// TO:   return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("/redirect-path")).build();
+```
+
+### Business Logic Preservation:
+```java
+// PRESERVE: All conditional logic
+if (condition) {
+    // Original business logic here
+}
+
+// PRESERVE: All loops and iterations
+for (Item item : items) {
+    // Original processing logic
+}
+
+// PRESERVE: All validation checks
+if (StringUtils.isEmpty(parameter)) {
+    // Original validation handling
+}
+```
+
+---
+
+## Output Format:
+- Use appropriate HTTP mapping annotation (`@GetMapping`, `@PostMapping`, `@PutMapping`, `@DeleteMapping`)
+- Convert method signature to Spring Boot pattern
+- Preserve method name (execute → appropriate REST verb name)
+- Inject services via `@Autowired` or constructor injection
+- Return `ResponseEntity<T>` for REST endpoints
+- Add proper exception handling with `@ExceptionHandler` if needed
+
+---
+
+## Example Transformation:
+
+**Input:**
+```java
+public ActionForward execute(ActionMapping mapping, ActionForm form,
+        HttpServletRequest request, HttpServletResponse response) throws Exception {
+    
+    String userId = request.getParameter("userId");
+    String action = request.getParameter("action");
+    
+    if (StringUtils.isEmpty(userId)) {
+        request.setAttribute("error", "User ID is required");
+        return mapping.findForward("error");
+    }
+    
+    User user = userService.findById(userId);
+    if (user == null) {
+        request.setAttribute("error", "User not found");
+        return mapping.findForward("error");
+    }
+    
+    if ("delete".equals(action)) {
+        userService.deleteUser(userId);
+        request.setAttribute("message", "User deleted successfully");
+        return mapping.findForward("success");
+    }
+    
+    request.setAttribute("user", user);
+    return mapping.findForward("view");
+}
+```
+
+**Expected Output:**
+```java
+@GetMapping
+public ResponseEntity<?> getUser(@RequestParam String userId, 
+                                @RequestParam(required = false) String action) {
+    
+    if (StringUtils.isEmpty(userId)) {
+        return ResponseEntity.badRequest().body(Map.of("error", "User ID is required"));
+    }
+    
+    User user = userService.findById(userId);
+    if (user == null) {
+        return ResponseEntity.badRequest().body(Map.of("error", "User not found"));
+    }
+    
+    if ("delete".equals(action)) {
+        userService.deleteUser(userId);
+        return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
+    }
+    
+    return ResponseEntity.ok(Map.of("user", user));
+}
+```
+
+## Critical Requirements:
+1. **ZERO LOGIC LOSS**: Every line of business logic must be preserved
+2. **COMPLETE PARAMETER MAPPING**: All request parameters must be mapped to method parameters
+3. **PROPER RESPONSE HANDLING**: All setAttribute + forward patterns must become ResponseEntity returns
+4. **ERROR PRESERVATION**: All error handling and validation must be maintained
+5. **NAVIGATION MAPPING**: All ActionForward targets must be converted to appropriate HTTP responses
+6. **SERVICE INTEGRATION**: All service calls and database operations must be preserved
+7. **EXCEPTION HANDLING**: All try-catch blocks and exception handling must be maintained
+
+**IMPORTANT**: 
+- This method should be the primary entry point for the controller
+- All business logic from the original execute() method must be preserved
+- Parameter validation and error handling are critical
+- Response structure should maintain the same data that was previously set as request attributes

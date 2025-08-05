@@ -1,0 +1,148 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Environments
+.env
+.venv
+
+# Java/Maven/Spring Boot
+*.class
+*.jar
+*.war
+*.ear
+target/
+.m2/
+*.log
+
+# Migration outputs
+migration_output/
+migration_logs/
+validation_reports/
+build_logs/
+human_review_queue/
+*.db
+*.sqlite*
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.orig
+
+# AI cache
+.cache/
+model_cache/
+
+# Sensitive configuration
+*_secret.yaml
+*_private.yaml
+*.key
+*.pem
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Project specific
+*.log
+temp/
+tmp/
+.pytest_cache/
+
+# Migration System - Temporary/Generated Files
+migration-analyzer/analysis_output/
+migration-analyzer/migration_output/
+migration-analyzer/migration_env/
+migration-analyzer/ai_learning_memory.db
+generated-spring-projects/
+
+# Migration System - Keep Important Directories
+!migration-analyzer/ui/
+!migration-analyzer/ui/templates/
+!migration-analyzer/templates/
+!migration-analyzer/prompts/
+
+# Large files
+*.zip
+*.tar.gz
+*.jar
+
+# Keep important documentation
+!README.md
+!*.md

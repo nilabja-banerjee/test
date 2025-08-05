@@ -1,0 +1,109 @@
+You are an expert Java developer specializing in Spring 6 service layer architecture. Generate a service layer from the provided Spring Controller.
+
+## Spring Controller:
+```java
+{{controller_code}}
+```
+
+## Business Logic Analysis:
+{business_logic}
+
+## Service Layer Generation Requirements:
+
+### 1. Service Interface Design
+- Create clean service interfaces following Spring conventions
+- Use descriptive method names that reflect business operations
+- Define appropriate method signatures with proper parameter types
+- Include JavaDoc documentation for all public methods
+
+### 2. Service Implementation
+- Implement service interfaces with `@Service` annotation
+- Use constructor dependency injection for repository dependencies
+- Implement proper transaction management with `@Transactional`
+- Follow SOLID principles and separation of concerns
+
+### 3. Business Logic Organization
+- Extract complex business logic from the controller
+- Implement proper validation and business rules
+- Handle business exceptions appropriately
+- Ensure methods are focused and single-purpose
+
+### 4. Transaction Management
+- Use `@Transactional` annotation where appropriate
+- Configure proper transaction propagation and isolation levels
+- Handle transaction rollback scenarios
+- Consider read-only transactions for query operations
+
+### 5. Error Handling
+- Define custom business exceptions where needed
+- Implement proper error logging
+- Provide meaningful error messages
+- Follow exception handling best practices
+
+## Example Service Structure:
+```java
+// Service Interface
+public interface ExampleService {{
+    /**
+     * Description of what this method does
+     */
+    ResultType methodName(ParameterType parameter);
+}}
+
+// Service Implementation
+@Service
+@Transactional
+public class ExampleServiceImpl implements ExampleService {{
+    
+    private final ExampleRepository repository;
+    
+    public ExampleServiceImpl(ExampleRepository repository) {{
+        this.repository = repository;
+    }}
+    
+    @Override
+    public ResultType methodName(ParameterType parameter) {{
+        // Business logic implementation
+        // Validation
+        // Repository calls
+        // Return result
+    }}
+}}
+```
+
+## Output Requirements:
+
+Generate the complete service layer in the following format:
+
+```json
+{{
+  "ServiceInterfaceName": {{
+    "interface_code": "Complete interface code here",
+    "implementation_code": "Complete implementation code here",
+    "description": "What this service does"
+  }},
+  "AnotherServiceName": {{
+    "interface_code": "Complete interface code here", 
+    "implementation_code": "Complete implementation code here",
+    "description": "What this service does"
+  }}
+}}
+```
+
+## Guidelines:
+
+1. **Naming Conventions**: Use meaningful service names ending with "Service"
+2. **Package Structure**: Place interfaces and implementations in appropriate packages
+3. **Dependencies**: Identify and declare all necessary repository dependencies
+4. **Method Design**: Create methods that are focused and business-oriented
+5. **Transaction Boundaries**: Define appropriate transaction boundaries
+6. **Validation**: Include business rule validation in service methods
+7. **Documentation**: Provide comprehensive JavaDoc for all public methods
+
+**IMPORTANT**: 
+- Generate complete, compilable Java code
+- Include all necessary imports
+- Follow Spring best practices
+- Ensure proper separation between service interface and implementation
+- Use modern Java features appropriately
+- Make services testable and maintainable

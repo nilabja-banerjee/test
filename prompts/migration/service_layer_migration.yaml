@@ -1,0 +1,1174 @@
+# Service Layer Migration Prompts
+metadata:
+  name: "Service Layer Migration"
+  description: "Convert Struts service classes to Spring Boot 3 services with modern dependency injection and transaction management"
+  version: "2.0"
+  author: "AI Migration System"
+  last_updated: "2025-08-02"
+  target_framework: "Spring Boot 3.3+"
+  target_java: "Java 21 LTS"
+  success_criteria:
+    - "@Service annotation properly applied at class level"
+    - "Constructor-based dependency injection used for all dependencies"
+    - "Proper use of @Transactional for transaction management with appropriate isolation and propagation"
+    - "Integration with Spring Data JPA repositories replacing legacy DAOs"
+    - "No legacy service locator or manual transaction code remain"
+    - "SLF4J logging used instead of System.out or custom loggers"
+    - "Exception handling follows Spring Boot patterns with proper rollback configuration"
+    - "Business logic preserved while modernizing infrastructure concerns"
+    - "Thread-safe and stateless service design"
+    - "Virtual thread compatibility for Java 21"
+    - "Proper validation using Bean Validation annotations"
+    - "Clean separation of concerns between service and repository layers"
+
+templates:
+  comprehensive_service_migration:
+    name: "Comprehensive Service Layer Migration"
+    description: "Complete service transformation with dependency injection, transactions, repository integration, and modern Spring Boot 3 patterns"
+    template: |
+      You are an expert Spring Boot 3 service architect specializing in modernizing legacy Struts service layers to enterprise-grade Spring Boot 3 services with advanced dependency injection, transaction management, and repository integration.
+
+      MIGRATION CONTEXT:
+      - Source Framework: Struts 1.x service layer with legacy patterns
+      - Target Framework: Spring Boot 3.3+ with Spring Data JPA
+      - Service Type: {service_type}
+      - Business Domain: {business_domain}
+      - Complexity: {complexity}
+      - Data Access Patterns: {data_access_patterns}
+      - Transaction Requirements: {transaction_requirements}
+      - Validation Requirements: {validation_requirements}
+      - Performance Requirements: {performance_requirements}
+
+      LEARNING CONTEXT FROM PREVIOUS MIGRATIONS:
+      {learning_context}
+
+      ORIGINAL STRUTS SERVICE CLASS:
+      ```java
+      {source_code}
+      ```
+
+      DETECTED SERVICE PATTERNS:
+      {detected_patterns}
+
+      COMPREHENSIVE MIGRATION REQUIREMENTS:
+
+      1. **SERVICE CLASS ANNOTATION & CONFIGURATION**:
+         - Add `@Service` annotation at class level for Spring component scanning
+         - Add `@Transactional` at class level for default transaction behavior
+         - Include `@Validated` for method parameter validation if applicable
+         - Consider `@Profile` annotations for environment-specific services
+         - Remove any legacy service registration or initialization code
+
+      2. **DEPENDENCY INJECTION TRANSFORMATION**:
+         - Convert all dependencies to constructor-based injection with `private final` fields
+         - Replace service locator patterns: `ServiceLocator.getInstance().getService()` → Constructor injection
+         - Replace manual DAO instantiation: `new UserDAO()` → `private final UserRepository userRepository`
+         - Add `@Autowired` annotation to constructor (optional for single constructor)
+         - Ensure all injected dependencies are Spring-managed beans
+         - Remove static service references and singleton patterns
+
+      3. **REPOSITORY INTEGRATION PATTERNS**:
+         - Replace legacy DAO interfaces with Spring Data JPA repositories
+         - `UserDAO.findById(id)` → `userRepository.findById(id).orElse(null)`
+         - `UserDAO.save(user)` → `userRepository.save(user)`
+         - `UserDAO.findAll()` → `userRepository.findAll()`
+         - `UserDAO.delete(id)` → `userRepository.deleteById(id)`
+         - Custom queries → `@Query` annotations or derived query methods
+         - Pagination support → `Pageable` parameters and `Page<T>` return types
+
+      4. **TRANSACTION MANAGEMENT TRANSFORMATION**:
+         - Remove manual transaction demarcation: `transaction.begin()`, `transaction.commit()`, `transaction.rollback()`
+         - Add `@Transactional` at method level for write operations
+         - Use `@Transactional(readOnly = true)` for read-only operations
+         - Configure rollback rules: `@Transactional(rollbackFor = Exception.class)`
+         - Set appropriate isolation levels: `@Transactional(isolation = Isolation.READ_COMMITTED)`
+         - Define propagation behavior: `@Transactional(propagation = Propagation.REQUIRED)`
+         - Remove try-catch blocks around transaction code
+
+      5. **EXCEPTION HANDLING MODERNIZATION**:
+         - Convert custom service exceptions to Spring's exception hierarchy
+         - Use `@Transactional(rollbackFor = {CustomException.class})` for specific rollback rules
+         - Replace checked exceptions with unchecked `RuntimeException` subclasses where appropriate
+         - Implement proper exception translation from repository layer
+         - Add validation exception handling with `@ExceptionHandler` if using `@Validated`
+
+      6. **LOGGING TRANSFORMATION**:
+         - Replace `System.out.println()` with SLF4J logging
+         - Add `private static final Logger log = LoggerFactory.getLogger(ClassName.class);`
+         - Use appropriate log levels: `log.debug()`, `log.info()`, `log.warn()`, `log.error()`
+         - Include MDC (Mapped Diagnostic Context) for request tracing if applicable
+         - Remove custom logging frameworks and use SLF4J with Logback
+
+      7. **VALIDATION INTEGRATION**:
+         - Add Bean Validation annotations to method parameters: `@Valid`, `@NotNull`, `@NotEmpty`
+         - Use `@Validated` at class level to enable method-level validation
+         - Replace manual validation logic with constraint annotations
+         - Handle validation exceptions appropriately with proper error messages
+
+      8. **MODERN JAVA 21 FEATURES**:
+         - Use pattern matching and switch expressions where appropriate
+         - Leverage records for DTOs and value objects
+         - Implement virtual thread compatibility (avoid thread-local usage)
+         - Use text blocks for complex string formatting
+         - Apply sealed classes for service response types if applicable
+
+      9. **PERFORMANCE OPTIMIZATION**:
+         - Add caching annotations: `@Cacheable`, `@CacheEvict`, `@CachePut`
+         - Implement async processing with `@Async` where appropriate
+         - Use `@Transactional(readOnly = true)` for read operations to optimize database connections
+         - Consider batch operations for bulk data processing
+         - Implement proper pagination for large datasets
+
+      10. **TESTING CONSIDERATIONS**:
+          - Design services to be easily testable with dependency injection
+          - Avoid static dependencies that complicate unit testing
+          - Ensure proper separation of concerns for mocking in tests
+          - Use interfaces for repositories to enable easy mocking
+
+      STRUTS TO SPRING SERVICE MAPPING GUIDE:
+      ```java
+      // Legacy Struts Service Pattern → Modern Spring Boot 3 Service Pattern
+      
+      // Class Declaration
+      public class UserService extends BaseService {
+      →
+      @Service
+      @Transactional
+      @Validated
+      public class UserService {
+      
+      // Dependency Management
+      private UserDAO userDAO = ServiceLocator.getInstance().getUserDAO();
+      →
+      private final UserRepository userRepository;
+      
+      public UserService(UserRepository userRepository) {
+          this.userRepository = userRepository;
+      }
+      
+      // Method with Manual Transaction
+      public User saveUser(User user) throws ServiceException {
+          Transaction tx = null;
+          try {
+              tx = HibernateUtil.getSession().beginTransaction();
+              User savedUser = userDAO.save(user);
+              tx.commit();
+              return savedUser;
+          } catch (Exception e) {
+              if (tx != null) tx.rollback();
+              throw new ServiceException("Error saving user", e);
+          }
+      }
+      →
+      @Transactional
+      public User saveUser(@Valid User user) {
+          log.info("Saving user: {}", user.getEmail());
+          try {
+              return userRepository.save(user);
+          } catch (DataAccessException e) {
+              log.error("Error saving user: {}", user.getEmail(), e);
+              throw new UserServiceException("Failed to save user", e);
+          }
+      }
+      
+      // Read-Only Method
+      public List<User> getAllUsers() {
+          return userDAO.findAll();
+      }
+      →
+      @Transactional(readOnly = true)
+      public List<User> getAllUsers() {
+          log.debug("Retrieving all users");
+          return userRepository.findAll();
+      }
+      
+      // Method with Validation
+      public User findByEmail(String email) throws ServiceException {
+          if (email == null || email.trim().isEmpty()) {
+              throw new ServiceException("Email cannot be null or empty");
+          }
+          return userDAO.findByEmail(email);
+      }
+      →
+      @Transactional(readOnly = true)
+      public Optional<User> findByEmail(@NotBlank String email) {
+          log.debug("Finding user by email: {}", email);
+          return userRepository.findByEmail(email);
+      }
+      
+      // Complex Business Logic with Multiple Repository Calls
+      public void deactivateUser(Long userId) throws ServiceException {
+          Transaction tx = null;
+          try {
+              tx = HibernateUtil.getSession().beginTransaction();
+              User user = userDAO.findById(userId);
+              if (user != null) {
+                  user.setActive(false);
+                  user.setDeactivatedDate(new Date());
+                  userDAO.update(user);
+                  auditDAO.logUserDeactivation(userId);
+              }
+              tx.commit();
+          } catch (Exception e) {
+              if (tx != null) tx.rollback();
+              throw new ServiceException("Error deactivating user", e);
+          }
+      }
+      →
+      @Transactional
+      public void deactivateUser(@NotNull Long userId) {
+          log.info("Deactivating user with ID: {}", userId);
+          userRepository.findById(userId)
+              .ifPresentOrElse(
+                  user -> {
+                      user.setActive(false);
+                      user.setDeactivatedDate(LocalDateTime.now());
+                      userRepository.save(user);
+                      auditService.logUserDeactivation(userId);
+                      log.info("Successfully deactivated user: {}", userId);
+                  },
+                  () -> {
+                      log.warn("User not found for deactivation: {}", userId);
+                      throw new UserNotFoundException("User not found: " + userId);
+                  }
+              );
+      }
+      ```
+
+      ADVANCED PATTERNS FOR COMPLEX SERVICES:
+
+      **1. Service with Caching:**
+      ```java
+      @Service
+      @Transactional
+      @CacheConfig(cacheNames = "users")
+      public class UserService {
+          
+          @Cacheable(key = "#id")
+          @Transactional(readOnly = true)
+          public Optional<User> findById(Long id) {
+              return userRepository.findById(id);
+          }
+          
+          @CacheEvict(key = "#user.id")
+          @Transactional
+          public User updateUser(User user) {
+              return userRepository.save(user);
+          }
+      }
+      ```
+
+      **2. Service with Async Processing:**
+      ```java
+      @Service
+      @Transactional
+      public class NotificationService {
+          
+          @Async
+          @Transactional(propagation = Propagation.REQUIRES_NEW)
+          public CompletableFuture<Void> sendWelcomeEmail(User user) {
+              log.info("Sending welcome email to: {}", user.getEmail());
+              // Email sending logic
+              return CompletableFuture.completedFuture(null);
+          }
+      }
+      ```
+
+      **3. Service with Custom Repository Methods:**
+      ```java
+      @Service
+      @Transactional
+      public class UserAnalyticsService {
+          
+          private final UserRepository userRepository;
+          
+          @Transactional(readOnly = true)
+          public Page<User> findActiveUsersByCountry(String country, Pageable pageable) {
+              return userRepository.findByActiveAndCountryOrderByCreatedDateDesc(true, country, pageable);
+          }
+          
+          @Transactional(readOnly = true)
+          public UserStatistics getUserStatistics() {
+              return UserStatistics.builder()
+                  .totalUsers(userRepository.count())
+                  .activeUsers(userRepository.countByActive(true))
+                  .newUsersThisMonth(userRepository.countByCreatedDateAfter(LocalDateTime.now().minusMonths(1)))
+                  .build();
+          }
+      }
+      ```
+
+      OUTPUT REQUIREMENTS:
+      - Complete Java class with proper package declaration and imports
+      - All required Spring Boot 3 annotations (@Service, @Transactional, @Validated)
+      - Constructor-based dependency injection for all repositories and services
+      - SLF4J logging with appropriate log levels and messages
+      - Proper exception handling with Spring Boot patterns
+      - Bean Validation annotations for method parameters
+      - No legacy Struts patterns, service locators, or manual transactions
+      - Modern Java 21 features where applicable
+      - Clean, maintainable code following Spring Boot best practices
+      - Thread-safe, stateless service design
+      - Pure Java code only—no markdown formatting or explanatory comments
+
+      EXAMPLE TRANSFORMATION RESULT:
+      ```java
+      package com.example.service;
+
+      import com.example.model.User;
+      import com.example.repository.UserRepository;
+      import com.example.exception.UserServiceException;
+      import lombok.RequiredArgsConstructor;
+      import lombok.extern.slf4j.Slf4j;
+      import org.springframework.stereotype.Service;
+      import org.springframework.transaction.annotation.Transactional;
+      import org.springframework.validation.annotation.Validated;
+      import org.springframework.data.domain.Page;
+      import org.springframework.data.domain.Pageable;
+
+      import jakarta.validation.Valid;
+      import jakarta.validation.constraints.NotBlank;
+      import jakarta.validation.constraints.NotNull;
+      import java.time.LocalDateTime;
+      import java.util.List;
+      import java.util.Optional;
+
+      @Slf4j
+      @Service
+      @Transactional
+      @Validated
+      @RequiredArgsConstructor
+      public class UserService {
+
+          private final UserRepository userRepository;
+          private final AuditService auditService;
+
+          @Transactional(readOnly = true)
+          public Optional<User> findById(@NotNull Long id) {
+              log.debug("Finding user by ID: {}", id);
+              return userRepository.findById(id);
+          }
+
+          @Transactional(readOnly = true)
+          public List<User> findAllActiveUsers() {
+              log.debug("Retrieving all active users");
+              return userRepository.findByActiveTrue();
+          }
+
+          @Transactional(readOnly = true)
+          public Page<User> findUsers(Pageable pageable) {
+              log.debug("Retrieving users with pagination: {}", pageable);
+              return userRepository.findAll(pageable);
+          }
+
+          @Transactional
+          public User createUser(@Valid User user) {
+              log.info("Creating new user: {}", user.getEmail());
+              user.setCreatedDate(LocalDateTime.now());
+              user.setActive(true);
+              
+              User savedUser = userRepository.save(user);
+              auditService.logUserCreation(savedUser.getId());
+              
+              log.info("Successfully created user with ID: {}", savedUser.getId());
+              return savedUser;
+          }
+
+          @Transactional
+          public User updateUser(@Valid User user) {
+              log.info("Updating user: {}", user.getId());
+              
+              return userRepository.findById(user.getId())
+                  .map(existingUser -> {
+                      existingUser.setFirstName(user.getFirstName());
+                      existingUser.setLastName(user.getLastName());
+                      existingUser.setEmail(user.getEmail());
+                      existingUser.setModifiedDate(LocalDateTime.now());
+                      
+                      User updatedUser = userRepository.save(existingUser);
+                      auditService.logUserUpdate(updatedUser.getId());
+                      
+                      log.info("Successfully updated user: {}", updatedUser.getId());
+                      return updatedUser;
+                  })
+                  .orElseThrow(() -> new UserServiceException("User not found: " + user.getId()));
+          }
+
+          @Transactional
+          public void deactivateUser(@NotNull Long userId) {
+              log.info("Deactivating user: {}", userId);
+              
+              userRepository.findById(userId)
+                  .ifPresentOrElse(
+                      user -> {
+                          user.setActive(false);
+                          user.setDeactivatedDate(LocalDateTime.now());
+                          userRepository.save(user);
+                          auditService.logUserDeactivation(userId);
+                          log.info("Successfully deactivated user: {}", userId);
+                      },
+                      () -> {
+                          log.warn("User not found for deactivation: {}", userId);
+                          throw new UserServiceException("User not found: " + userId);
+                      }
+                  );
+          }
+
+          @Transactional(readOnly = true)
+          public boolean isEmailAvailable(@NotBlank String email) {
+              log.debug("Checking email availability: {}", email);
+              return !userRepository.existsByEmail(email);
+          }
+
+          @Transactional(readOnly = true)
+          public long countActiveUsers() {
+              return userRepository.countByActiveTrue();
+          }
+      }
+      ```
+
+      Generate the complete, modernized Spring Boot 3 service class:
+
+    parameters:
+      - service_type
+      - business_domain
+      - complexity
+      - data_access_patterns
+      - transaction_requirements
+      - validation_requirements
+      - performance_requirements
+      - source_code
+      - detected_patterns
+      - learning_context
+
+  repository_integration_migration:
+    name: "Repository-Focused Service Migration"
+    description: "Service migration emphasizing Spring Data JPA repository integration and data access patterns"
+    template: |
+      You are a Spring Data JPA expert converting legacy DAO-based services to modern repository-integrated services.
+
+      MIGRATION CONTEXT:
+      - Service with Repository Integration: {service_name}
+      - Repository Types: {repository_types}
+      - Data Access Complexity: {data_complexity}
+      - Query Requirements: {query_requirements}
+
+      ORIGINAL STRUTS SERVICE:
+      ```java
+      {source_code}
+      ```
+
+      REPOSITORY INTEGRATION REQUIREMENTS:
+      1. **Repository Dependency Injection** → Replace all DAO dependencies with Spring Data repositories
+      2. **CRUD Operations Migration** → Convert basic CRUD operations to repository method calls
+      3. **Custom Query Integration** → Transform complex queries to `@Query` annotations or derived methods
+      4. **Pagination Support** → Add `Pageable` parameters and `Page<T>` return types for large datasets
+      5. **Specification Integration** → Use `JpaSpecificationExecutor` for dynamic queries
+      6. **Transaction Boundaries** → Define appropriate transactional boundaries around repository calls
+
+      DAO TO REPOSITORY MAPPING:
+      - `dao.save(entity)` → `repository.save(entity)`
+      - `dao.findById(id)` → `repository.findById(id).orElse(null)` or `repository.findById(id).orElseThrow()`
+      - `dao.findAll()` → `repository.findAll()`
+      - `dao.delete(entity)` → `repository.delete(entity)` or `repository.deleteById(id)`
+      - `dao.findByProperty(value)` → `repository.findByProperty(value)`
+      - Complex queries → `@Query` annotations or `Specification` usage
+
+      ADVANCED REPOSITORY PATTERNS:
+      ```java
+      // Custom query with @Query
+      @Query("SELECT u FROM User u WHERE u.active = true AND u.country = ?1")
+      List<User> findActiveUsersByCountry(String country);
+      
+      // Derived query method
+      List<User> findByActiveAndCountryOrderByCreatedDateDesc(boolean active, String country);
+      
+      // Pagination support
+      Page<User> findByActive(boolean active, Pageable pageable);
+      
+      // Projection for performance
+      @Query("SELECT new com.example.dto.UserSummary(u.id, u.firstName, u.lastName) FROM User u")
+      List<UserSummary> findUserSummaries();
+      ```
+
+      OUTPUT REQUIREMENTS:
+      - Complete service class with repository injection
+      - All DAO calls replaced with repository methods
+      - Proper exception handling for repository operations
+      - Pagination support where applicable
+      - Clean separation between service logic and data access
+
+      Generate the repository-integrated service class:
+
+    parameters:
+      - service_name
+      - repository_types
+      - data_complexity
+      - query_requirements
+      - source_code
+
+  transaction_management_migration:
+    name: "Transaction-Focused Service Migration" 
+    description: "Service migration emphasizing proper transaction boundaries, isolation, and rollback strategies"
+    template: |
+      You are a Spring transaction management expert converting manual transaction handling to declarative transaction management.
+
+      MIGRATION CONTEXT:
+      - Transaction Complexity: {transaction_complexity}
+      - Business Operations: {business_operations}
+      - Rollback Requirements: {rollback_requirements}
+      - Isolation Needs: {isolation_requirements}
+
+      ORIGINAL SERVICE WITH MANUAL TRANSACTIONS:
+      ```java
+      {source_code}
+      ```
+
+      TRANSACTION MIGRATION REQUIREMENTS:
+      1. **Remove Manual Transaction Code** → Eliminate all manual `begin()`, `commit()`, `rollback()` calls
+      2. **Declarative Transactions** → Add `@Transactional` annotations with appropriate configuration
+      3. **Read-Only Optimization** → Use `@Transactional(readOnly = true)` for read operations
+      4. **Rollback Configuration** → Define rollback rules with `rollbackFor` and `noRollbackFor`
+      5. **Isolation Levels** → Set appropriate isolation levels for concurrent access
+      6. **Propagation Behavior** → Configure transaction propagation for service interactions
+
+      TRANSACTION ANNOTATION PATTERNS:
+      ```java
+      // Write operations
+      @Transactional
+      public User saveUser(User user) { ... }
+      
+      // Read-only operations
+      @Transactional(readOnly = true)
+      public List<User> findAllUsers() { ... }
+      
+      // Custom rollback rules
+      @Transactional(rollbackFor = {DataException.class, ValidationException.class})
+      public void processUserData(User user) { ... }
+      
+      // Isolation level configuration
+      @Transactional(isolation = Isolation.READ_COMMITTED)
+      public void updateUserBalance(Long userId, BigDecimal amount) { ... }
+      
+      // New transaction for audit logging
+      @Transactional(propagation = Propagation.REQUIRES_NEW)
+      public void logAuditEvent(AuditEvent event) { ... }
+      ```
+
+      TRANSACTION BOUNDARY GUIDELINES:
+      - Keep transactions as short as possible
+      - Use read-only transactions for query operations
+      - Define clear rollback strategies
+      - Avoid nested transactions unless necessary
+      - Handle exceptions appropriately within transaction context
+
+      Generate the transaction-managed service class:
+
+    parameters:
+      - transaction_complexity
+      - business_operations
+      - rollback_requirements
+      - isolation_requirements
+      - source_code
+
+  learning_enhanced_service_migration:
+    name: "Learning-Enhanced Service Migration"
+    description: "Service migration using patterns from successful previous service transformations"
+    template: |
+      You are an expert Spring Boot service migration architect with access to successful patterns from previous service layer migrations.
+
+      SUCCESSFUL PATTERNS FROM MEMORY:
+      {learning_patterns}
+
+      PREVIOUS SUCCESSFUL SERVICE MIGRATIONS:
+      {successful_examples}
+
+      CURRENT SERVICE MIGRATION TASK:
+      Convert this Struts service using proven patterns from similar successful service migrations.
+
+      SOURCE SERVICE CODE:
+      ```java
+      {source_code}
+      ```
+
+      CONTEXT:
+      - Service Type: {service_type}
+      - Business Domain: {business_domain}
+      - Complexity: {complexity}
+      - Similar Previous Success Score: {similarity_score}
+
+      APPLY LEARNED PATTERNS:
+      1. Use service structures that worked well in similar service types
+      2. Follow dependency injection patterns from successful migrations
+      3. Apply transaction management strategies that achieved high performance scores
+      4. Incorporate repository integration patterns that improved maintainability scores
+      5. Use exception handling approaches proven successful in similar domains
+      6. Apply logging patterns that enhanced debugging and monitoring capabilities
+
+      REQUIREMENTS:
+      - Apply the most successful patterns from memory
+      - Ensure compatibility with established project conventions
+      - Generate clean, production-ready Spring Boot service
+      - Include comprehensive transaction management and validation features
+      - Follow performance best practices from learned patterns
+
+      Generate the enhanced service class using learned patterns:
+
+    parameters:
+      - source_code
+      - service_type
+      - business_domain
+      - complexity
+      - learning_patterns
+      - successful_examples
+      - similarity_score
+
+validation:
+  critical_success_indicators:
+    - "@Service annotation properly applied at class level"
+    - "Constructor-based dependency injection implemented for all dependencies"
+    - "@Transactional annotations correctly applied with appropriate configuration"
+    - "All legacy DAO calls replaced with Spring Data repository methods"
+    - "Manual transaction management code completely removed"
+    - "SLF4J logging properly implemented with appropriate log levels"
+    - "Exception handling follows Spring Boot patterns with proper rollback configuration"
+    - "Bean Validation annotations applied where appropriate"
+    - "Service is stateless and thread-safe"
+    - "No legacy service locator or singleton patterns remain"
+    
+  quality_metrics:
+    - "Business logic preserved during migration without functional regression"
+    - "Performance optimized with read-only transactions and proper caching"
+    - "Exception handling comprehensive with meaningful error messages"
+    - "Code maintainability improved with clean dependency injection"
+    - "Testability enhanced through proper separation of concerns"
+    - "Transaction boundaries appropriately defined for optimal performance"
+    - "Modern Java 21 features utilized where applicable"
+    - "Thread-safe design compatible with virtual threads"
+    - "Proper validation and error handling for edge cases"
+    - "Documentation and logging sufficient for production monitoring"
+
+  learning_metrics:
+    - "Service layer performance compared to legacy implementation"
+    - "Developer productivity improvement in service maintenance"
+    - "Code quality metrics (complexity, maintainability, testability)"
+    - "Transaction management effectiveness and rollback success rates"
+    - "Exception handling coverage and error recovery capabilities"
+    - "Integration success with Spring Boot ecosystem components"
+
+examples:
+  legacy_struts_service_input:
+    service_type: "user_management_service"
+    business_domain: "user_administration"
+    complexity: "medium"
+    data_access_patterns: ["hibernate_session", "manual_dao", "service_locator"]
+    transaction_requirements: ["manual_transaction", "rollback_handling"]
+    validation_requirements: ["manual_validation", "business_rules"]
+    performance_requirements: ["caching", "pagination"]
+    detected_patterns: ["service_locator", "manual_transaction", "hibernate_session", "custom_exceptions"]
+    source_code: |
+      package com.javachap.service.impl;
+
+      import com.javachap.domain.User;
+      import com.javachap.service.UserService;
+      import com.javachap.service.ServiceException;
+      import com.javachap.utils.HibernateUtils;
+      import org.hibernate.Session;
+      import org.hibernate.Transaction;
+      import java.util.List;
+      import java.util.Date;
+
+      public class UserServiceImpl implements UserService {
+          
+          public User saveUser(User user) throws ServiceException {
+              Transaction tx = null;
+              Session session = null;
+              try {
+                  session = HibernateUtils.getSession();
+                  tx = session.beginTransaction();
+                  
+                  // Validation
+                  if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+                      throw new ServiceException("Email is required");
+                  }
+                  
+                  // Check for duplicate email
+                  User existingUser = (User) session.createQuery("FROM User WHERE email = :email")
+                      .setParameter("email", user.getEmail())
+                      .uniqueResult();
+                  
+                  if (existingUser != null && !existingUser.getId().equals(user.getId())) {
+                      throw new ServiceException("Email already exists");
+                  }
+                  
+                  user.setCreatedDate(new Date());
+                  session.saveOrUpdate(user);
+                  tx.commit();
+                  
+                  System.out.println("User saved successfully: " + user.getEmail());
+                  return user;
+              } catch (Exception e) {
+                  if (tx != null) {
+                      tx.rollback();
+                  }
+                  System.err.println("Error saving user: " + e.getMessage());
+                  throw new ServiceException("Failed to save user", e);
+              } finally {
+                  if (session != null) {
+                      session.close();
+                  }
+              }
+          }
+          
+          public User findUserById(Long id) throws ServiceException {
+              Session session = null;
+              try {
+                  session = HibernateUtils.getSession();
+                  User user = (User) session.get(User.class, id);
+                  return user;
+              } catch (Exception e) {
+                  System.err.println("Error finding user: " + e.getMessage());
+                  throw new ServiceException("Failed to find user", e);
+              } finally {
+                  if (session != null) {
+                      session.close();
+                  }
+              }
+          }
+          
+          public List<User> findAllUsers() throws ServiceException {
+              Session session = null;
+              try {
+                  session = HibernateUtils.getSession();
+                  List<User> users = session.createQuery("FROM User ORDER BY lastName, firstName").list();
+                  return users;
+              } catch (Exception e) {
+                  System.err.println("Error retrieving users: " + e.getMessage());
+                  throw new ServiceException("Failed to retrieve users", e);
+              } finally {
+                  if (session != null) {
+                      session.close();
+                  }
+              }
+          }
+          
+          public void deleteUser(Long id) throws ServiceException {
+              Transaction tx = null;
+              Session session = null;
+              try {
+                  session = HibernateUtils.getSession();
+                  tx = session.beginTransaction();
+                  
+                  User user = (User) session.get(User.class, id);
+                  if (user != null) {
+                      session.delete(user);
+                      System.out.println("User deleted: " + user.getEmail());
+                  }
+                  
+                  tx.commit();
+              } catch (Exception e) {
+                  if (tx != null) {
+                      tx.rollback();
+                  }
+                  System.err.println("Error deleting user: " + e.getMessage());
+                  throw new ServiceException("Failed to delete user", e);
+              } finally {
+                  if (session != null) {
+                      session.close();
+                  }
+              }
+          }
+          
+          public List<User> findActiveUsers() throws ServiceException {
+              Session session = null;
+              try {
+                  session = HibernateUtils.getSession();
+                  List<User> users = session.createQuery("FROM User WHERE active = true ORDER BY lastName").list();
+                  return users;
+              } catch (Exception e) {
+                  System.err.println("Error retrieving active users: " + e.getMessage());
+                  throw new ServiceException("Failed to retrieve active users", e);
+              } finally {
+                  if (session != null) {
+                      session.close();
+                  }
+              }
+          }
+      }
+
+  expected_spring_service_output: |
+    package com.javachap.service.impl;
+
+    import com.javachap.domain.User;
+    import com.javachap.repository.UserRepository;
+    import com.javachap.service.UserService;
+    import com.javachap.exception.UserServiceException;
+    import com.javachap.exception.DuplicateEmailException;
+    import lombok.RequiredArgsConstructor;
+    import lombok.extern.slf4j.Slf4j;
+    import org.springframework.stereotype.Service;
+    import org.springframework.transaction.annotation.Transactional;
+    import org.springframework.validation.annotation.Validated;
+
+    import jakarta.validation.Valid;
+    import jakarta.validation.constraints.NotNull;
+    import jakarta.validation.constraints.NotBlank;
+    import java.time.LocalDateTime;
+    import java.util.List;
+    import java.util.Optional;
+
+    @Slf4j
+    @Service
+    @Transactional
+    @Validated
+    @RequiredArgsConstructor
+    public class UserServiceImpl implements UserService {
+
+        private final UserRepository userRepository;
+
+        @Override
+        @Transactional
+        public User saveUser(@Valid User user) {
+            log.info("Saving user: {}", user.getEmail());
+            
+            // Check for duplicate email
+            if (userRepository.existsByEmailAndIdNot(user.getEmail(), user.getId() != null ? user.getId() : -1L)) {
+                log.warn("Attempt to save user with duplicate email: {}", user.getEmail());
+                throw new DuplicateEmailException("Email already exists: " + user.getEmail());
+            }
+            
+            if (user.getId() == null) {
+                user.setCreatedDate(LocalDateTime.now());
+            } else {
+                user.setModifiedDate(LocalDateTime.now());
+            }
+            
+            User savedUser = userRepository.save(user);
+            log.info("User saved successfully with ID: {}", savedUser.getId());
+            return savedUser;
+        }
+
+        @Override
+        @Transactional(readOnly = true)
+        public Optional<User> findUserById(@NotNull Long id) {
+            log.debug("Finding user by ID: {}", id);
+            return userRepository.findById(id);
+        }
+
+        @Override
+        @Transactional(readOnly = true)
+        public List<User> findAllUsers() {
+            log.debug("Retrieving all users");
+            return userRepository.findAllByOrderByLastNameAscFirstNameAsc();
+        }
+
+        @Override
+        @Transactional
+        public void deleteUser(@NotNull Long id) {
+            log.info("Deleting user with ID: {}", id);
+            
+            userRepository.findById(id)
+                .ifPresentOrElse(
+                    user -> {
+                        userRepository.delete(user);
+                        log.info("User deleted successfully: {}", user.getEmail());
+                    },
+                    () -> {
+                        log.warn("User not found for deletion: {}", id);
+                        throw new UserServiceException("User not found: " + id);
+                    }
+                );
+        }
+
+        @Override
+        @Transactional(readOnly = true)
+        public List<User> findActiveUsers() {
+            log.debug("Retrieving active users");
+            return userRepository.findByActiveTrueOrderByLastNameAsc();
+        }
+
+        @Override
+        @Transactional(readOnly = true)
+        public boolean isEmailAvailable(@NotBlank String email) {
+            log.debug("Checking email availability: {}", email);
+            return !userRepository.existsByEmail(email);
+        }
+
+        @Override
+        @Transactional(readOnly = true)
+        public long countActiveUsers() {
+            return userRepository.countByActiveTrue();
+        }
+    }
+
+  complex_service_input:
+    service_type: "order_processing_service"
+    business_domain: "e_commerce"
+    complexity: "high"
+    data_access_patterns: ["multiple_dao", "manual_transaction", "service_locator", "custom_queries"]
+    transaction_requirements: ["complex_rollback", "isolation_levels", "propagation"]
+    validation_requirements: ["business_rules", "cross_entity_validation"]
+    performance_requirements: ["batch_processing", "async_operations", "caching"]
+    detected_patterns: ["service_locator", "manual_transaction", "multiple_dao", "complex_business_logic"]
+    source_code: |
+      package com.example.service.impl;
+
+      import com.example.domain.Order;
+      import com.example.domain.OrderItem;
+      import com.example.domain.Product;
+      import com.example.domain.User;
+      import com.example.service.OrderService;
+      import com.example.service.ServiceException;
+      import com.example.dao.OrderDAO;
+      import com.example.dao.ProductDAO;
+      import com.example.dao.UserDAO;
+      import com.example.utils.HibernateUtils;
+      import org.hibernate.Session;
+      import org.hibernate.Transaction;
+      import java.math.BigDecimal;
+      import java.util.List;
+      import java.util.Date;
+
+      public class OrderServiceImpl implements OrderService {
+          
+          private OrderDAO orderDAO;
+          private ProductDAO productDAO;
+          private UserDAO userDAO;
+          
+          public OrderServiceImpl() {
+              this.orderDAO = new OrderDAO();
+              this.productDAO = new ProductDAO();
+              this.userDAO = new UserDAO();
+          }
+          
+          public Order processOrder(Order order) throws ServiceException {
+              Transaction tx = null;
+              Session session = null;
+              try {
+                  session = HibernateUtils.getSession();
+                  tx = session.beginTransaction();
+                  
+                  // Validate user
+                  User user = userDAO.findById(order.getUserId());
+                  if (user == null || !user.isActive()) {
+                      throw new ServiceException("Invalid or inactive user");
+                  }
+                  
+                  // Validate and process order items
+                  BigDecimal totalAmount = BigDecimal.ZERO;
+                  for (OrderItem item : order.getItems()) {
+                      Product product = productDAO.findById(item.getProductId());
+                      if (product == null) {
+                          throw new ServiceException("Product not found: " + item.getProductId());
+                      }
+                      
+                      if (product.getStock() < item.getQuantity()) {
+                          throw new ServiceException("Insufficient stock for product: " + product.getName());
+                      }
+                      
+                      // Update stock
+                      product.setStock(product.getStock() - item.getQuantity());
+                      productDAO.update(product);
+                      
+                      // Calculate item total
+                      BigDecimal itemTotal = product.getPrice().multiply(new BigDecimal(item.getQuantity()));
+                      item.setUnitPrice(product.getPrice());
+                      item.setTotalPrice(itemTotal);
+                      totalAmount = totalAmount.add(itemTotal);
+                  }
+                  
+                  // Set order details
+                  order.setOrderDate(new Date());
+                  order.setTotalAmount(totalAmount);
+                  order.setStatus("PENDING");
+                  
+                  // Save order
+                  order = orderDAO.save(order);
+                  
+                  tx.commit();
+                  
+                  System.out.println("Order processed successfully: " + order.getId());
+                  return order;
+              } catch (Exception e) {
+                  if (tx != null) {
+                      tx.rollback();
+                  }
+                  System.err.println("Error processing order: " + e.getMessage());
+                  throw new ServiceException("Failed to process order", e);
+              } finally {
+                  if (session != null) {
+                      session.close();
+                  }
+              }
+          }
+          
+          public List<Order> findOrdersByUser(Long userId) throws ServiceException {
+              Session session = null;
+              try {
+                  session = HibernateUtils.getSession();
+                  List<Order> orders = orderDAO.findByUserId(userId);
+                  return orders;
+              } catch (Exception e) {
+                  System.err.println("Error finding orders for user: " + e.getMessage());
+                  throw new ServiceException("Failed to retrieve orders", e);
+              } finally {
+                  if (session != null) {
+                      session.close();
+                  }
+              }
+          }
+      }
+
+  expected_complex_output: |
+    package com.example.service.impl;
+
+    import com.example.domain.Order;
+    import com.example.domain.OrderItem;
+    import com.example.domain.Product;
+    import com.example.domain.User;
+    import com.example.repository.OrderRepository;
+    import com.example.repository.ProductRepository;
+    import com.example.repository.UserRepository;
+    import com.example.service.OrderService;
+    import com.example.service.InventoryService;
+    import com.example.service.NotificationService;
+    import com.example.exception.OrderServiceException;
+    import com.example.exception.InsufficientStockException;
+    import com.example.exception.InvalidUserException;
+    import lombok.RequiredArgsConstructor;
+    import lombok.extern.slf4j.Slf4j;
+    import org.springframework.stereotype.Service;
+    import org.springframework.transaction.annotation.Isolation;
+    import org.springframework.transaction.annotation.Propagation;
+    import org.springframework.transaction.annotation.Transactional;
+    import org.springframework.validation.annotation.Validated;
+
+    import jakarta.validation.Valid;
+    import jakarta.validation.constraints.NotNull;
+    import java.math.BigDecimal;
+    import java.time.LocalDateTime;
+    import java.util.List;
+    import java.util.concurrent.CompletableFuture;
+
+    @Slf4j
+    @Service
+    @Transactional
+    @Validated
+    @RequiredArgsConstructor
+    public class OrderServiceImpl implements OrderService {
+
+        private final OrderRepository orderRepository;
+        private final ProductRepository productRepository;
+        private final UserRepository userRepository;
+        private final InventoryService inventoryService;
+        private final NotificationService notificationService;
+
+        @Override
+        @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+        public Order processOrder(@Valid Order order) {
+            log.info("Processing order for user: {}", order.getUserId());
+            
+            // Validate user
+            User user = userRepository.findById(order.getUserId())
+                .filter(User::isActive)
+                .orElseThrow(() -> new InvalidUserException("Invalid or inactive user: " + order.getUserId()));
+            
+            // Process order items and calculate total
+            BigDecimal totalAmount = BigDecimal.ZERO;
+            for (OrderItem item : order.getItems()) {
+                Product product = productRepository.findById(item.getProductId())
+                    .orElseThrow(() -> new OrderServiceException("Product not found: " + item.getProductId()));
+                
+                // Check stock availability
+                if (!inventoryService.isStockAvailable(product.getId(), item.getQuantity())) {
+                    throw new InsufficientStockException("Insufficient stock for product: " + product.getName());
+                }
+                
+                // Reserve inventory
+                inventoryService.reserveStock(product.getId(), item.getQuantity());
+                
+                // Calculate item total
+                BigDecimal itemTotal = product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+                item.setUnitPrice(product.getPrice());
+                item.setTotalPrice(itemTotal);
+                item.setOrder(order);
+                totalAmount = totalAmount.add(itemTotal);
+            }
+            
+            // Set order details
+            order.setOrderDate(LocalDateTime.now());
+            order.setTotalAmount(totalAmount);
+            order.setStatus("PENDING");
+            order.setUser(user);
+            
+            // Save order
+            Order savedOrder = orderRepository.save(order);
+            
+            // Send notification asynchronously
+            notificationService.sendOrderConfirmationAsync(savedOrder)
+                .exceptionally(ex -> {
+                    log.error("Failed to send order confirmation for order: {}", savedOrder.getId(), ex);
+                    return null;
+                });
+            
+            log.info("Order processed successfully with ID: {}", savedOrder.getId());
+            return savedOrder;
+        }
+
+        @Override
+        @Transactional(readOnly = true)
+        public List<Order> findOrdersByUser(@NotNull Long userId) {
+            log.debug("Finding orders for user: {}", userId);
+            return orderRepository.findByUserIdOrderByOrderDateDesc(userId);
+        }
+
+        @Override
+        @Transactional(readOnly = true)
+        public List<Order> findOrdersByStatus(@NotNull String status) {
+            log.debug("Finding orders by status: {}", status);
+            return orderRepository.findByStatusOrderByOrderDateDesc(status);
+        }
+
+        @Override
+        @Transactional
+        public Order updateOrderStatus(@NotNull Long orderId, @NotNull String newStatus) {
+            log.info("Updating order status - Order ID: {}, New Status: {}", orderId, newStatus);
+            
+            return orderRepository.findById(orderId)
+                .map(order -> {
+                    String oldStatus = order.getStatus();
+                    order.setStatus(newStatus);
+                    order.setLastModified(LocalDateTime.now());
+                    
+                    Order updatedOrder = orderRepository.save(order);
+                    
+                    // Handle status-specific logic
+                    if ("CONFIRMED".equals(newStatus) && !"CONFIRMED".equals(oldStatus)) {
+                        inventoryService.confirmStockReservation(orderId);
+                        notificationService.sendOrderConfirmationAsync(updatedOrder);
+                    } else if ("CANCELLED".equals(newStatus) && !"CANCELLED".equals(oldStatus)) {
+                        inventoryService.releaseStockReservation(orderId);
+                        notificationService.sendOrderCancellationAsync(updatedOrder);
+                    }
+                    
+                    log.info("Order status updated successfully - Order ID: {}", orderId);
+                    return updatedOrder;
+                })
+                .orElseThrow(() -> new OrderServiceException("Order not found: " + orderId));
+        }
+
+        @Override
+        @Transactional(readOnly = true)
+        public BigDecimal calculateOrderTotal(@NotNull Long orderId) {
+            log.debug("Calculating total for order: {}", orderId);
+            return orderRepository.findById(orderId)
+                .map(Order::getTotalAmount)
+                .orElseThrow(() -> new OrderServiceException("Order not found: " + orderId));
+        }
+
+        @Override
+        @Transactional(readOnly = true)
+        public long countOrdersByStatus(@NotNull String status) {
+            return orderRepository.countByStatus(status);
+        }
+    }

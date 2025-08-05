@@ -1,0 +1,280 @@
+You are converting a Struts `ActionForm` Java class into a clean Spring Boot DTO or form model class.
+
+## Goal:
+Transform legacy Struts ActionForm into a modern Spring Boot DTO while preserving all fields, validation logic, and data structure. Ensure complete field preservation and proper validation mapping.
+
+---
+
+## Objective:
+Preserve all fields and validations, remove any Struts-specific dependencies, and create a clean, modern DTO suitable for Spring Boot REST APIs and form handling.
+
+---
+
+## Rules:
+1. Convert class to a POJO with `@Data` or `@Getter/@Setter` (Lombok preferred unless told otherwise).
+2. Remove `extends ActionForm` and all Struts imports.
+3. **PRESERVE ALL FIELDS**: Every private field must be retained with exact same name and type.
+4. **PRESERVE ALL GETTERS/SETTERS**: Maintain all accessor methods.
+5. Convert validations from `validate()` method to Bean Validation annotations:
+   - `@NotNull`, `@NotBlank`, `@Size`, `@Email`, `@Pattern`, `@Min`, `@Max`, etc.
+6. If the form has nested objects, create DTOs for those as well (or mark TODO).
+7. Avoid any dependency on `HttpServletRequest` or servlet API.
+8. **MAINTAIN FIELD TYPES**: Keep original data types unless conversion is explicitly needed.
+9. **PRESERVE CONSTANTS**: Any static final fields must be retained.
+
+---
+
+## Analysis Context:
+{analysis}
+
+## Original ActionForm Code:
+```java
+{form_code}
+```
+
+## Target Configuration:
+- Java Version: {target_java_version}
+- Validation Framework: Bean Validation (JSR-380)
+- DTO Style: {dto_style} (lombok|traditional)
+
+---
+
+## Transformation Patterns:
+
+### Class Declaration:
+```java
+// FROM: public class LeadForm extends ActionForm
+// TO:   @Data public class LeadDTO
+
+// FROM: public class UserRegistrationForm extends ActionForm  
+// TO:   @Data public class UserRegistrationDTO
+```
+
+### Field Preservation:
+```java
+// PRESERVE EXACTLY: private String name;
+// PRESERVE EXACTLY: private int age;
+// PRESERVE EXACTLY: private List<String> hobbies;
+// PRESERVE EXACTLY: private Date birthDate;
+```
+
+### Validation Mapping:
+```java
+// FROM: validate() method checking if name is empty
+// TO:   @NotBlank private String name;
+
+// FROM: validate() method checking email format
+// TO:   @Email private String email;
+
+// FROM: validate() method checking string length
+// TO:   @Size(min=2, max=50) private String name;
+
+// FROM: validate() method checking numeric range
+// TO:   @Min(18) @Max(100) private int age;
+```
+
+### Getter/Setter Preservation:
+```java
+// WITH LOMBOK (@Data): Automatically generated
+// WITHOUT LOMBOK: Keep all existing getters and setters exactly as they were
+```
+
+---
+
+## Validation Conversion Reference:
+
+### Common Validation Patterns:
+```java
+// Empty/Null Check → @NotBlank, @NotNull, @NotEmpty
+if (StringUtils.isEmpty(field)) → @NotBlank private String field;
+
+// Length Check → @Size
+if (field.length() < min || field.length() > max) → @Size(min=X, max=Y) private String field;
+
+// Email Check → @Email  
+if (!isValidEmail(field)) → @Email private String email;
+
+// Numeric Range → @Min, @Max
+if (number < min || number > max) → @Min(X) @Max(Y) private int number;
+
+// Pattern Check → @Pattern
+if (!field.matches(regex)) → @Pattern(regexp="regex") private String field;
+
+// Custom Validation → @Valid + Custom Validator
+// Complex business rules → Create custom @Constraint annotation
+```
+
+### Nested Object Handling:
+```java
+// FROM: private AddressForm address;
+// TO:   @Valid private AddressDTO address; // + create AddressDTO
+
+// FROM: private List<ContactForm> contacts;
+// TO:   @Valid private List<ContactDTO> contacts; // + create ContactDTO
+```
+
+---
+
+## Example Transformation:
+
+**Input:**
+```java
+public class LeadRegistrationForm extends ActionForm {
+    
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phone;
+    private int age;
+    private String company;
+    private List<String> interests;
+    private boolean newsletter;
+    
+    public ActionErrors validate(ActionMapping mapping, HttpServletRequest request) {
+        ActionErrors errors = new ActionErrors();
+        
+        if (firstName == null || firstName.trim().length() == 0) {
+            errors.add("firstName", new ActionMessage("error.firstname.required"));
+        }
+        
+        if (email == null || !isValidEmail(email)) {
+            errors.add("email", new ActionMessage("error.email.invalid"));
+        }
+        
+        if (age < 18 || age > 100) {
+            errors.add("age", new ActionMessage("error.age.range"));
+        }
+        
+        if (phone != null && !phone.matches("\\d{{10}}")) {
+            errors.add("phone", new ActionMessage("error.phone.format"));
+        }
+        
+        return errors;
+    }
+    
+    private boolean isValidEmail(String email) {
+        return email.contains("@") && email.contains(".");
+    }
+    
+    // Standard getters and setters
+    public String getFirstName() {{ return firstName; }}
+    public void setFirstName(String firstName) {{ this.firstName = firstName; }}
+    
+    public String getLastName() {{ return lastName; }}
+    public void setLastName(String lastName) {{ this.lastName = lastName; }}
+    
+    // ... all other getters/setters
+}
+```
+
+**Expected Output (Lombok Style):**
+```java
+import lombok.Data;
+import javax.validation.constraints.*;
+import java.util.List;
+
+@Data
+public class LeadRegistrationDTO {
+    
+    @NotBlank(message = "First name is required")
+    private String firstName;
+    
+    private String lastName;
+    
+    @NotNull(message = "Email is required")
+    @Email(message = "Email format is invalid")
+    private String email;
+    
+    @Pattern(regexp = "\\d{{10}}", message = "Phone must be 10 digits")
+    private String phone;
+    
+    @Min(value = 18, message = "Age must be at least 18")
+    @Max(value = 100, message = "Age must not exceed 100")
+    private int age;
+    
+    private String company;
+    
+    private List<String> interests;
+    
+    private boolean newsletter;
+}
+```
+
+**Expected Output (Traditional Style):**
+```java
+import javax.validation.constraints.*;
+import java.util.List;
+
+public class LeadRegistrationDTO {
+    
+    @NotBlank(message = "First name is required")
+    private String firstName;
+    
+    private String lastName;
+    
+    @NotNull(message = "Email is required")
+    @Email(message = "Email format is invalid")  
+    private String email;
+    
+    @Pattern(regexp = "\\d{{10}}", message = "Phone must be 10 digits")
+    private String phone;
+    
+    @Min(value = 18, message = "Age must be at least 18")
+    @Max(value = 100, message = "Age must not exceed 100")
+    private int age;
+    
+    private String company;
+    
+    private List<String> interests;
+    
+    private boolean newsletter;
+    
+    // Standard getters and setters preserved exactly
+    public String getFirstName() {{ return firstName; }}
+    public void setFirstName(String firstName) {{ this.firstName = firstName; }}
+    
+    public String getLastName() {{ return lastName; }}
+    public void setLastName(String lastName) {{ this.lastName = lastName; }}
+    
+    public String getEmail() {{ return email; }}
+    public void setEmail(String email) {{ this.email = email; }}
+    
+    public String getPhone() {{ return phone; }}
+    public void setPhone(String phone) {{ this.phone = phone; }}
+    
+    public int getAge() {{ return age; }}
+    public void setAge(int age) {{ this.age = age; }}
+    
+    public String getCompany() {{ return company; }}
+    public void setCompany(String company) {{ this.company = company; }}
+    
+    public List<String> getInterests() {{ return interests; }}
+    public void setInterests(List<String> interests) {{ this.interests = interests; }}
+    
+    public boolean isNewsletter() {{ return newsletter; }}
+    public void setNewsletter(boolean newsletter) {{ this.newsletter = newsletter; }}
+}
+```
+
+---
+
+## Critical Requirements:
+1. **ZERO FIELD LOSS**: Every field from the ActionForm must exist in the DTO
+2. **TYPE PRESERVATION**: Maintain exact same data types unless explicitly converting
+3. **VALIDATION MAPPING**: Every validation rule must be converted to Bean Validation
+4. **ACCESSOR PRESERVATION**: All getters/setters must be maintained (unless using Lombok)
+5. **NAMING CONSISTENCY**: Keep exact same field and method names
+6. **NESTED OBJECT HANDLING**: Create DTOs for any nested ActionForm objects
+7. **CONSTANT PRESERVATION**: Retain any static final fields or constants
+
+## Advanced Validation Scenarios:
+- **Cross-Field Validation**: Use `@AssertTrue` or custom class-level validators
+- **Conditional Validation**: Create custom `@Constraint` annotations for complex business rules
+- **Collection Validation**: Use `@Valid` for validating list/array elements
+- **Date Validation**: Use `@Past`, `@Future`, `@PastOrPresent`, `@FutureOrPresent`
+
+**IMPORTANT**: 
+- This DTO should be a complete replacement for the original ActionForm
+- All validation logic must be preserved through Bean Validation annotations
+- No business logic should be lost in the transformation
+- The DTO should work seamlessly with Spring Boot controllers using `@Valid` annotation

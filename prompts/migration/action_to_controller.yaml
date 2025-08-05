@@ -1,0 +1,622 @@
+# Action to Controller Migration Prompts
+metadata:
+  name: "Struts 1 Action to Spring Boot 3 Controller Migration"
+  description: "Convert legacy Struts 1 Action classes into modern Spring Boot 3 Controllers"
+  version: "2.0"
+  author: "AI Migration System"
+  last_updated: "2025-08-02"
+  target_framework: "Spring Boot 3.3+"
+  target_java: "Java 21 LTS"
+  success_criteria:
+    - "@Controller annotation present on class"
+    - "@RequestMapping/@GetMapping/@PostMapping methods for each Struts action"
+    - "Constructor-based dependency injection used for services"
+    - "Original business logic preserved exactly"
+    - "No org.apache.struts.* or ActionForward references remain"
+    - "Proper Spring Boot 3 imports (jakarta.servlet, jakarta.validation, etc.)"
+    - "Appropriate exception handling (@ExceptionHandler methods or ControllerAdvice)"
+    - "Thread-safe and compatible with virtual threads"
+    - "Comprehensive JavaDoc on class and methods"
+    - "Consistent naming aligned with project conventions"
+    - "OpenAPI 3.0 annotations for REST endpoints"
+    - "Modern HTTP status handling and response types"
+
+templates:
+  comprehensive_action_migration:
+    name: "Comprehensive Struts 1 to Spring Boot 3 Action Migration"
+    description: "Full-featured migration with all modern Java 21 and Spring Boot 3.3+ capabilities"
+    template: |
+      You are an expert Spring Boot 3 migration architect specializing in modernizing legacy Struts 1 applications to cutting-edge Java 21 and Spring Boot 3.3+ standards.
+
+      MIGRATION CONTEXT:
+      - Source Framework: Struts 1.x (Action class)
+      - Target Framework: Spring Boot 3.3+ with Java 21
+      - Source Artifact: {artifact_type} (complexity: {complexity})
+      - Business Domain: {business_domain}
+      - Struts Patterns Detected: {detected_patterns}
+      - Integration Requirements: {integration_requirements}
+
+      LEARNING CONTEXT FROM PREVIOUS MIGRATIONS:
+      {learning_context}
+
+      ORIGINAL STRUTS 1 ACTION:
+      ```java
+      {source_code}
+      ```
+
+      DETECTED LEGACY PATTERNS:
+      {detected_patterns}
+
+      COMPREHENSIVE MIGRATION REQUIREMENTS:
+
+      1. **NAMESPACE MIGRATION (CRITICAL)**:
+         - Replace ALL javax.* imports with jakarta.* equivalents
+         - javax.servlet.* → jakarta.servlet.*
+         - javax.validation.* → jakarta.validation.*
+         - javax.persistence.* → jakarta.persistence.*
+
+      2. **LEGACY STRUTS ELIMINATION**:
+         - Remove Action inheritance completely (extends Action)
+         - Eliminate execute() method signature - convert to Spring MVC methods
+         - Remove ActionMapping, ActionForm, ActionForward dependencies
+         - Remove all org.apache.struts.* imports
+         - Eliminate manual request/response manipulation where possible
+
+      3. **SPRING BOOT 3 CONTROLLER PATTERNS**:
+         - Apply @Controller annotation on class
+         - Use @RequestMapping for class-level path mapping
+         - Convert execute() to @GetMapping/@PostMapping/@RequestMapping methods
+         - Implement proper HTTP method semantics (GET for queries, POST for mutations)
+         - Use @RestController for API endpoints returning JSON
+
+      4. **MODERN PARAMETER BINDING**:
+         - Replace ActionForm with @ModelAttribute for form binding
+         - Use @RequestParam for individual parameters
+         - Apply @PathVariable for URL path segments
+         - Use @RequestBody for JSON/XML payload binding
+         - Implement @Valid for automatic validation
+
+      5. **DEPENDENCY INJECTION & SERVICES**:
+         - Constructor-based dependency injection (preferred)
+         - Remove manual service lookups or static singletons
+         - Use @Autowired only when constructor injection isn't feasible
+         - Apply @Qualifier for multiple bean candidates
+
+      6. **SESSION & STATE MANAGEMENT**:
+         - Use @SessionAttributes for session-scoped data
+         - Apply HttpSession injection for direct session access
+         - Use RedirectAttributes for flash messages
+         - Implement @SessionScope beans for complex session state
+
+      7. **ERROR HANDLING & VALIDATION**:
+         - Convert ActionErrors to @ExceptionHandler methods
+         - Use BindingResult for form validation errors
+         - Implement @ControllerAdvice for global error handling
+         - Apply custom exception classes for business logic errors
+         - Use @ResponseStatus for HTTP status mapping
+
+      8. **MODERN JAVA 21 FEATURES**:
+         - Use Records for simple DTO responses and request objects
+         - Apply sealed classes for response type hierarchies
+         - Leverage switch expressions for complex routing logic
+         - Use text blocks for multi-line string responses (templates, emails)
+         - Apply pattern matching where applicable
+
+      9. **RESPONSE HANDLING**:
+         - Convert ActionForward to String view names for JSP/Thymeleaf
+         - Use ResponseEntity<T> for REST API responses
+         - Apply RedirectView for programmatic redirects
+         - Use ModelAndView for complex view scenarios
+         - Implement @ResponseBody for direct response writing
+
+      10. **DOCUMENTATION & API INTEGRATION**:
+          - Add comprehensive JavaDoc explaining business purpose
+          - Include @Schema annotations for OpenAPI 3.0 documentation
+          - Apply @Operation and @ApiResponse for REST endpoints
+          - Document all parameters with @Parameter annotations
+
+      11. **SECURITY INTEGRATION**:
+          - Use @PreAuthorize for method-level security
+          - Apply @Secured for role-based access control
+          - Integrate with Spring Security for authentication
+          - Use @AuthenticationPrincipal for current user access
+
+      STRUTS TO SPRING BOOT MAPPING GUIDE:
+      ```java
+      // Legacy Pattern → Modern Spring Boot 3 Pattern
+      extends Action → @Controller
+      execute(ActionMapping, ActionForm, HttpServletRequest, HttpServletResponse) → @PostMapping("/path")
+      mapping.findForward("success") → return "success" or ResponseEntity.ok()
+      ActionForm form → @ModelAttribute FormClass form
+      request.setAttribute("data", value) → model.addAttribute("data", value)
+      ActionErrors errors → BindingResult result or @ExceptionHandler
+      Manual service lookup → Constructor injection
+      ActionForward redirect → return "redirect:/path"
+      ```
+
+      OUTPUT REQUIREMENTS:
+      - Complete, compilable Java class with proper package declaration
+      - All jakarta.* imports (NO javax.* imports)
+      - Modern Java 21 syntax and Spring Boot 3 patterns
+      - Full Spring Boot 3 compatibility with proper annotations
+      - Constructor-based dependency injection
+      - Comprehensive error handling
+      - Production-ready code quality with proper documentation
+      - No markdown formatting - raw Java code only
+      - Include all necessary imports at the top
+
+      EXAMPLE TRANSFORMATION PATTERN:
+      ```java
+      // OLD STRUTS 1 PATTERN (DON'T GENERATE THIS)
+      public class UserAction extends Action {
+          public ActionForward execute(ActionMapping mapping, ActionForm form,
+                                     HttpServletRequest request, HttpServletResponse response) {
+              return mapping.findForward("success");
+          }
+      }
+      
+      // NEW SPRING BOOT 3 PATTERN (GENERATE LIKE THIS)
+      @Controller
+      @RequestMapping("/users")
+      public class UserController {
+          private final UserService userService;
+          
+          public UserController(UserService userService) {
+              this.userService = userService;
+          }
+          
+          @PostMapping("/create")
+          public String createUser(@ModelAttribute @Valid UserForm form, BindingResult result) {
+              if (result.hasErrors()) return "user/form";
+              userService.createUser(form);
+              return "redirect:/users/success";
+          }
+      }
+      ```
+
+      Generate the complete, modern Spring Boot 3 Controller using Java 21 features:
+
+    parameters:
+      - artifact_type
+      - complexity
+      - business_domain
+      - detected_patterns
+      - integration_requirements
+      - source_code
+      - learning_context
+
+  detailed_action_migration:
+    name: "Detailed Action Migration"
+    description: "Full migration with deep context analysis and pattern mapping"
+    template: |
+      You are a seasoned Spring Boot 3 migration architect. Convert the following Struts 1 Action class into a modern, production-ready Spring Boot 3 controller.
+
+      MIGRATION CONTEXT:
+      - Source Artifact: {artifact_type} (complexity: {complexity})
+      - Business Domain: {business_domain}
+      - Struts Patterns Detected: {detected_patterns}
+      - Target Framework: Spring Boot 3.3+, Java 21
+
+      TRANSFORMATION REQUIREMENTS:
+      1. **Annotations & Class Definition**  
+         - Replace `extends Action` with `@Controller`  
+         - Apply class-level `@RequestMapping` if a common path exists  
+
+      2. **Method Migration**  
+         - Convert `execute(...)` methods to `@GetMapping`/`@PostMapping` or `@RequestMapping` methods  
+         - Map Struts forwards (`mapping.findForward("name")`) to return view names or `ResponseEntity<T>`  
+
+      3. **Parameter Binding**  
+         - Replace `ActionForm` parameters with `@ModelAttribute` or individual `@RequestParam`  
+         - Use `@PathVariable` or `@RequestBody` where appropriate  
+
+      4. **Dependency Injection**  
+         - Inject services via constructor  
+         - Remove any manual service lookups or static singletons  
+
+      5. **Session & Flash Attributes**  
+         - Use `@SessionAttributes` for session-scoped data  
+         - Use `RedirectAttributes` for flash messages  
+
+      6. **Error Handling**  
+         - Implement `@ExceptionHandler` methods in the same controller or a `@ControllerAdvice` class  
+         - Convert Struts `ActionErrors` logic into exception throwing or `BindingResult` checks  
+
+      7. **Modern Java 21 Usage**  
+         - Use records for simple DTO responses  
+         - Leverage switch expressions if routing logic is complex  
+         - Use text blocks for multi-line strings (e.g., email templates)  
+
+      8. **Documentation**  
+         - Add JavaDoc at class and method level explaining purpose, parameters, and returns  
+         - Include `@Schema` annotations for OpenAPI where REST endpoints exist  
+
+      ORIGINAL STRUTS ACTION:
+      ```java
+      {source_code}
+      ```
+
+      OUTPUT REQUIREMENTS:
+      - Start with `package` declaration  
+      - Include all necessary imports (`jakarta.servlet`, `org.springframework.*`)  
+      - Complete, compilable Java class with no legacy Struts imports  
+      - Pure Java code only—no markdown or extraneous text  
+
+      Generate the full Spring Boot 3 controller class:
+
+    parameters:
+      - artifact_type
+      - complexity
+      - business_domain
+      - detected_patterns
+      - source_code
+
+  quick_action_migration:
+    name: "Quick Action Migration"
+    description: "Fast migration for straightforward Action classes"
+    template: |
+      Convert this Struts 1 Action class to a Spring Boot 3 controller.
+
+      REQUIREMENTS:
+      - Use `@Controller` and `@RequestMapping`/`@PostMapping`  
+      - Preserve all original logic  
+      - Constructor-based DI for any services  
+      - No ActionForward, ActionForm, or Struts imports remain  
+      - Replace ALL javax.* with jakarta.* imports
+
+      ORIGINAL CODE:
+      ```java
+      {source_code}
+      ```
+
+      Generate ONLY the complete Java class:
+
+    parameters:
+      - source_code
+
+  pattern_aware_action_migration:
+    name: "Pattern-Aware Action Migration"
+    description: "Migration tailored to detected Struts patterns"
+    template: |
+      You are migrating a Struts 1 Action that uses these patterns: {patterns}
+
+      APPLY THE FOLLOWING PATTERN-SPECIFIC TRANSFORMATIONS:
+      {%- if "execute_pattern" in patterns %}
+      - Convert the `execute()` method to an appropriate `@PostMapping` method  
+      {%- endif %}
+      {%- if "forward_pattern" in patterns %}
+      - Map `mapping.findForward()` calls to return view name strings  
+      {%- endif %}
+      {%- if "session_pattern" in patterns %}
+      - Use `@SessionAttributes` or `HttpSession` injection for session data  
+      {%- endif %}
+      {%- if "form_pattern" in patterns %}
+      - Replace `ActionForm` usage with `@ModelAttribute` binding  
+      {%- endif %}
+      {%- if "error_pattern" in patterns %}
+      - Use `BindingResult` or throw custom exceptions for validation errors  
+      {%- endif %}
+
+      ORIGINAL STRUTS ACTION:
+      ```java
+      {source_code}
+      ```
+
+      Generate the refined Spring Boot 3 controller class:
+
+    parameters:
+      - patterns
+      - source_code
+
+  learning_enhanced_action_migration:
+    name: "Learning-Enhanced Action Migration"
+    description: "Migration using patterns from successful previous Action conversions"
+    template: |
+      You are an expert Spring Boot 3 migration architect with access to successful patterns from previous Action conversions.
+
+      SUCCESSFUL PATTERNS FROM MEMORY:
+      {learning_patterns}
+
+      PREVIOUS SUCCESSFUL CONVERSIONS:
+      {successful_examples}
+
+      CURRENT MIGRATION TASK:
+      Convert this Struts Action using proven patterns from similar successful migrations.
+
+      SOURCE CODE:
+      ```java
+      {source_code}
+      ```
+
+      CONTEXT:
+      - Business Domain: {business_domain}
+      - Complexity: {complexity}
+      - Similar Previous Success Score: {similarity_score}
+
+      APPLY LEARNED PATTERNS:
+      1. Use controller patterns that worked well in similar domains
+      2. Follow naming conventions from successful migrations
+      3. Apply dependency injection strategies that achieved high validation scores
+      4. Incorporate error handling approaches that prevented runtime issues
+      5. Use request mapping patterns proven successful in similar business contexts
+
+      REQUIREMENTS:
+      - Apply the most successful patterns from memory
+      - Ensure compatibility with established project conventions
+      - Generate clean, production-ready Spring Boot 3 controller
+      - Replace ALL javax.* with jakarta.* imports
+      - Include comprehensive error handling
+
+      Generate the enhanced controller class using learned patterns:
+
+    parameters:
+      - source_code
+      - business_domain
+      - complexity
+      - learning_patterns
+      - successful_examples
+      - similarity_score
+
+validation:
+  critical_success_indicators:
+    - "Zero javax.* imports (all converted to jakarta.*)"
+    - "@Controller annotation present on class"
+    - "@RequestMapping/@GetMapping/@PostMapping on methods"
+    - "Constructor injection used for dependencies"
+    - "No `extends Action` or Struts imports remain"
+    - "All ActionForward patterns replaced with Spring equivalents"
+    - "Proper exception handling implemented"
+    - "Java 21 and Spring Boot 3.3+ compatibility"
+    
+  quality_metrics:
+    - "Business logic exactly preserved"
+    - "Clean, readable method structures"
+    - "Correct return types (String, ResponseEntity, ModelAndView)"
+    - "Appropriate imports (jakarta.servlet, org.springframework.*)"
+    - "Compilation success without errors"
+    - "Performance equal or better than original"
+    - "Thread-safe design for virtual threads"
+    - "Comprehensive error handling coverage"
+
+  learning_metrics:
+    - "Controller compilation success rate"
+    - "Request mapping accuracy score"
+    - "Dependency injection correctness"
+    - "Error handling completeness"
+    - "Performance improvement over original"
+
+examples:
+  struts1_action_input:
+    artifact_type: "action"
+    complexity: "medium"
+    business_domain: "user_authentication"
+    detected_patterns: ["execute_pattern", "forward_pattern", "form_pattern", "error_pattern"]
+    source_code: |
+      package com.legacy.struts;
+      
+      import javax.servlet.http.HttpServletRequest;
+      import javax.servlet.http.HttpServletResponse;
+      import org.apache.struts.action.Action;
+      import org.apache.struts.action.ActionForm;
+      import org.apache.struts.action.ActionForward;
+      import org.apache.struts.action.ActionMapping;
+      import org.apache.struts.action.ActionErrors;
+      import org.apache.struts.action.ActionMessage;
+      
+      public class LoginAction extends Action {
+          
+          public ActionForward execute(ActionMapping mapping, ActionForm form,
+                                     HttpServletRequest request, HttpServletResponse response) {
+              
+              LoginForm loginForm = (LoginForm) form;
+              
+              // Validate credentials
+              if (loginForm.getUsername() == null || loginForm.getUsername().trim().isEmpty()) {
+                  ActionErrors errors = new ActionErrors();
+                  errors.add("username", new ActionMessage("error.username.required"));
+                  saveErrors(request, errors);
+                  return mapping.findForward("input");
+              }
+              
+              // Authenticate user
+              UserService userService = UserServiceFactory.getInstance();
+              User user = userService.authenticate(loginForm.getUsername(), loginForm.getPassword());
+              
+              if (user == null) {
+                  ActionErrors errors = new ActionErrors();
+                  errors.add("login", new ActionMessage("error.login.invalid"));
+                  saveErrors(request, errors);
+                  return mapping.findForward("input");
+              }
+              
+              // Set user in session
+              request.getSession().setAttribute("currentUser", user);
+              request.setAttribute("welcomeMessage", "Welcome, " + user.getFullName());
+              
+              return mapping.findForward("success");
+          }
+      }
+
+  expected_spring_boot3_output: |
+    package com.example.controller;
+    
+    import jakarta.servlet.http.HttpServletRequest;
+    import jakarta.servlet.http.HttpSession;
+    import jakarta.validation.Valid;
+    import org.springframework.stereotype.Controller;
+    import org.springframework.ui.Model;
+    import org.springframework.validation.BindingResult;
+    import org.springframework.web.bind.annotation.GetMapping;
+    import org.springframework.web.bind.annotation.ModelAttribute;
+    import org.springframework.web.bind.annotation.PostMapping;
+    import org.springframework.web.bind.annotation.RequestMapping;
+    import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+    import io.swagger.v3.oas.annotations.Operation;
+    import io.swagger.v3.oas.annotations.responses.ApiResponse;
+    import com.example.model.LoginForm;
+    import com.example.service.UserService;
+    import com.example.entity.User;
+    
+    /**
+     * Controller for user authentication operations.
+     * Migrated from Struts 1 LoginAction to Spring Boot 3.
+     * 
+     * @author Migration System
+     * @since Spring Boot 3.3
+     */
+    @Controller
+    @RequestMapping("/auth")
+    public class LoginController {
+        
+        private final UserService userService;
+        
+        /**
+         * Constructor-based dependency injection for UserService.
+         *
+         * @param userService service for user authentication operations
+         */
+        public LoginController(UserService userService) {
+            this.userService = userService;
+        }
+        
+        /**
+         * Display the login form.
+         *
+         * @param model Spring MVC model for view attributes
+         * @return view name for login page
+         */
+        @GetMapping("/login")
+        @Operation(summary = "Display login form")
+        @ApiResponse(responseCode = "200", description = "Login form displayed successfully")
+        public String showLoginForm(Model model) {
+            model.addAttribute("loginForm", new LoginForm());
+            return "auth/login";
+        }
+        
+        /**
+         * Process user login authentication.
+         *
+         * @param loginForm form data containing username and password
+         * @param result binding result for form validation
+         * @param model Spring MVC model for view attributes
+         * @param session HTTP session for user state
+         * @param redirectAttributes attributes for redirect scenarios
+         * @return view name or redirect path based on authentication result
+         */
+        @PostMapping("/login")
+        @Operation(summary = "Authenticate user login")
+        @ApiResponse(responseCode = "200", description = "Login processed")
+        @ApiResponse(responseCode = "400", description = "Invalid credentials")
+        public String processLogin(@ModelAttribute("loginForm") @Valid LoginForm loginForm,
+                                 BindingResult result,
+                                 Model model,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
+            
+            // Check for validation errors
+            if (result.hasErrors()) {
+                return "auth/login";
+            }
+            
+            // Authenticate user
+            User user = userService.authenticate(loginForm.getUsername(), loginForm.getPassword());
+            
+            if (user == null) {
+                result.rejectValue("username", "error.login.invalid", "Invalid username or password");
+                return "auth/login";
+            }
+            
+            // Set user in session
+            session.setAttribute("currentUser", user);
+            redirectAttributes.addFlashAttribute("welcomeMessage", 
+                "Welcome, " + user.getFullName() + "!");
+            
+            return "redirect:/dashboard";
+        }
+        
+        /**
+         * Handle authentication exceptions.
+         *
+         * @param ex the authentication exception
+         * @param model Spring MVC model for error attributes
+         * @return error view name
+         */
+        @ExceptionHandler(AuthenticationException.class)
+        public String handleAuthenticationError(AuthenticationException ex, Model model) {
+            model.addAttribute("error", "Authentication failed: " + ex.getMessage());
+            model.addAttribute("loginForm", new LoginForm());
+            return "auth/login";
+        }
+    }
+
+  rest_controller_example:
+    artifact_type: "api_action"
+    complexity: "high"
+    business_domain: "user_management"
+    source_code: |
+      // Struts Action returning JSON for AJAX calls
+      public class UserDataAction extends Action {
+          public ActionForward execute(ActionMapping mapping, ActionForm form,
+                                     HttpServletRequest request, HttpServletResponse response) {
+              
+              String userId = request.getParameter("userId");
+              UserService service = new UserService();
+              User user = service.findById(Long.parseLong(userId));
+              
+              response.setContentType("application/json");
+              PrintWriter out = response.getWriter();
+              out.print("{\"name\":\"" + user.getName() + "\",\"email\":\"" + user.getEmail() + "\"}");
+              
+              return null; // No forward for AJAX response
+          }
+      }
+
+    expected_rest_output: |
+      package com.example.controller;
+      
+      import org.springframework.http.ResponseEntity;
+      import org.springframework.web.bind.annotation.GetMapping;
+      import org.springframework.web.bind.annotation.PathVariable;
+      import org.springframework.web.bind.annotation.RequestMapping;
+      import org.springframework.web.bind.annotation.RestController;
+      import io.swagger.v3.oas.annotations.Operation;
+      import io.swagger.v3.oas.annotations.Parameter;
+      import io.swagger.v3.oas.annotations.responses.ApiResponse;
+      import com.example.service.UserService;
+      import com.example.dto.UserResponse;
+      
+      /**
+       * REST Controller for user data operations.
+       * Migrated from Struts 1 AJAX Action to Spring Boot 3 REST API.
+       */
+      @RestController
+      @RequestMapping("/api/users")
+      public class UserDataController {
+          
+          private final UserService userService;
+          
+          public UserDataController(UserService userService) {
+              this.userService = userService;
+          }
+          
+          @GetMapping("/{userId}")
+          @Operation(summary = "Get user data by ID")
+          @ApiResponse(responseCode = "200", description = "User data retrieved successfully")
+          @ApiResponse(responseCode = "404", description = "User not found")
+          public ResponseEntity<UserResponse> getUserData(
+                  @Parameter(description = "User ID") @PathVariable Long userId) {
+              
+              User user = userService.findById(userId);
+              if (user == null) {
+                  return ResponseEntity.notFound().build();
+              }
+              
+              UserResponse response = new UserResponse(user.getName(), user.getEmail());
+              return ResponseEntity.ok(response);
+          }
+          
+          /**
+           * DTO for user response data using Java Record.
+           */
+          public record UserResponse(String name, String email) {}
+      }

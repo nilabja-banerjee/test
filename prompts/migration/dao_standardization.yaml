@@ -1,0 +1,972 @@
+# DAO Standardization Migration Prompts
+metadata:
+  name: "Legacy DAO to Spring Data JPA Repository Migration"
+  description: "Convert legacy DAO patterns to Spring Data JPA repositories with Spring Boot 3"
+  version: "2.0"
+  author: "AI Migration System"
+  last_updated: "2025-08-02"
+  target_framework: "Spring Boot 3.3+"
+  target_java: "Java 21 LTS"
+  success_criteria:
+    - "Repository interfaces extend JpaRepository or CrudRepository"
+    - "Use of Spring Data JPA derived query methods"
+    - "Proper JPA entity mapping annotations present"
+    - "Transaction management via @Transactional"
+    - "No legacy JDBC, Hibernate Session, or manual transaction code"
+    - "Pagination and sorting support where applicable"
+    - "Custom queries annotated with @Query and @Param"
+    - "Jakarta namespace conversion completed (no javax.* imports)"
+    - "Modern exception handling with Spring Data exceptions"
+    - "Proper separation of concerns between repository and service layers"
+    - "Entity auditing and validation annotations included"
+    - "Performance optimizations with caching and batching where appropriate"
+
+templates:
+  comprehensive_dao_migration:
+    name: "Comprehensive DAO to Spring Data JPA Migration"
+    description: "Full DAO to Spring Data JPA repository conversion with modern Spring Boot 3 patterns"
+    template: |
+      You are an expert Spring Data JPA migration architect specializing in modernizing legacy DAO implementations to cutting-edge Spring Boot 3.3+ and Java 21 standards.
+
+      MIGRATION CONTEXT:
+      - Source Framework: Legacy DAO ({dao_type} pattern)
+      - Target Framework: Spring Data JPA with Spring Boot 3.3+
+      - Entity: {entity_name}
+      - ID Type: {id_type}
+      - Business Domain: {business_domain}
+      - Complexity: {complexity}
+      - Database Operations: {db_operations}
+      - Integration Requirements: {integration_requirements}
+
+      LEARNING CONTEXT FROM PREVIOUS MIGRATIONS:
+      {learning_context}
+
+      ORIGINAL DAO CODE:
+      ```java
+      {source_code}
+      ```
+
+      DETECTED DAO PATTERNS:
+      {detected_patterns}
+
+      COMPREHENSIVE MIGRATION REQUIREMENTS:
+
+      1. **NAMESPACE MIGRATION (CRITICAL)**:
+         - Replace ALL javax.* imports with jakarta.* equivalents
+         - javax.persistence.* → jakarta.persistence.*
+         - javax.validation.* → jakarta.validation.*
+         - javax.annotation.* → jakarta.annotation.*
+         - javax.transaction.* → jakarta.transaction.*
+
+      2. **LEGACY DAO ELIMINATION**:
+         - Remove all manual Session, SessionFactory, Connection management
+         - Eliminate JDBC PreparedStatement, ResultSet handling
+         - Remove manual transaction demarcation code
+         - Eliminate custom exception handling for data access
+         - Remove SQL result mapping code
+
+      3. **SPRING DATA JPA REPOSITORY PATTERNS**:
+         - Create repository interface extending JpaRepository<Entity, ID>
+         - Apply @Repository annotation for exception translation
+         - Use derived query methods for standard operations
+         - Implement @Query annotations for complex queries
+         - Add @Param annotations for named parameters
+
+      4. **ENTITY MAPPING MODERNIZATION**:
+         - Ensure @Entity annotation with proper table mapping
+         - Use @Id and @GeneratedValue for primary keys
+         - Apply @Column annotations for specific column mappings
+         - Add @JoinColumn and relationship annotations
+         - Implement @Embedded and @Embeddable for complex types
+
+      5. **QUERY TRANSFORMATION**:
+         - Convert simple finders to derived query methods
+         - Transform HQL to JPQL in @Query annotations
+         - Convert native SQL to JPA native queries
+         - Implement Specification pattern for dynamic queries
+         - Add Criteria API replacements where needed
+
+      6. **TRANSACTION MANAGEMENT**:
+         - Remove manual transaction handling code
+         - Apply @Transactional at service layer (not repository)
+         - Use proper isolation levels and propagation
+         - Implement rollback strategies for business exceptions
+         - Add transaction timeout configurations
+
+      7. **PAGINATION & SORTING**:
+         - Add Pageable parameters for list operations
+         - Implement Sort parameters for ordering
+         - Use PagingAndSortingRepository for large datasets
+         - Add count queries for pagination metadata
+         - Optimize queries for performance
+
+      8. **MODERN JAVA 21 FEATURES**:
+         - Use Records for simple DTO projections
+         - Apply pattern matching in repository logic
+         - Leverage Optional return types for nullable results
+         - Use Stream API for collection processing
+         - Apply text blocks for complex native queries
+
+      9. **EXCEPTION HANDLING**:
+         - Replace SQLException with Spring Data exceptions
+         - Use DataAccessException hierarchy appropriately
+         - Implement proper exception translation
+         - Add meaningful error messages and logging
+         - Handle optimistic locking conflicts
+
+      10. **PERFORMANCE OPTIMIZATION**:
+          - Add @EntityGraph for fetch strategies
+          - Implement @Cacheable for read-heavy operations
+          - Use @Modifying for bulk update/delete operations
+          - Add @BatchSize for collection fetching
+          - Optimize N+1 query problems
+
+      11. **VALIDATION & AUDITING**:
+          - Add Jakarta Bean Validation annotations
+          - Implement JPA auditing with @CreatedDate, @LastModifiedDate
+          - Use @Version for optimistic locking
+          - Add @PrePersist and @PreUpdate callbacks
+          - Implement soft delete patterns where needed
+
+      12. **TESTING INTEGRATION**:
+          - Add @DataJpaTest for repository testing
+          - Use @TestConfiguration for test-specific beans
+          - Implement test slices for focused testing
+          - Add integration tests with TestContainers
+          - Create test data builders and fixtures
+
+      DAO PATTERN TRANSFORMATION GUIDE:
+      ```java
+      // Legacy Pattern → Modern Spring Data JPA Pattern
+      
+      // Manual Session Management
+      Session session = sessionFactory.getCurrentSession();
+      User user = session.get(User.class, id);
+      →
+      Optional<User> user = userRepository.findById(id);
+      
+      // HQL Query
+      Query query = session.createQuery("FROM User WHERE email = :email");
+      query.setParameter("email", email);
+      User user = (User) query.uniqueResult();
+      →
+      User findByEmail(String email);
+      // OR
+      @Query("SELECT u FROM User u WHERE u.email = :email")
+      User findUserByEmail(@Param("email") String email);
+      
+      // JDBC PreparedStatement
+      PreparedStatement ps = connection.prepareStatement("SELECT * FROM users WHERE active = ?");
+      ps.setBoolean(1, true);
+      ResultSet rs = ps.executeQuery();
+      →
+      List<User> findByActiveTrue();
+      
+      // Manual Transaction
+      Transaction tx = session.beginTransaction();
+      try {
+          session.save(user);
+          tx.commit();
+      } catch (Exception e) {
+          tx.rollback();
+      }
+      →
+      @Transactional
+      public User saveUser(User user) {
+          return userRepository.save(user);
+      }
+      
+      // Complex Native Query
+      SQLQuery query = session.createSQLQuery("SELECT u.*, p.name as profile_name FROM users u JOIN profiles p ON u.profile_id = p.id WHERE u.created_date > ?");
+      →
+      @Query(value = "SELECT u.*, p.name as profile_name FROM users u JOIN profiles p ON u.profile_id = p.id WHERE u.created_date > :date", nativeQuery = true)
+      List<Object[]> findUsersWithProfilesCreatedAfter(@Param("date") LocalDate date);
+      ```
+
+      OUTPUT REQUIREMENTS:
+      - Complete repository interface with proper package declaration
+      - All Jakarta namespace imports (NO javax.* imports)
+      - Modern Spring Data JPA patterns and annotations
+      - Entity class updates with proper JPA mapping
+      - Custom repository implementation only if complex business logic required
+      - Proper separation between repository and service concerns
+      - Production-ready code with comprehensive error handling
+      - No legacy DAO, Session, or JDBC code remnants
+      - Include all necessary imports at the top
+
+      EXAMPLE TRANSFORMATION PATTERN:
+      ```java
+      // Repository Interface
+      package com.example.repository;
+      
+      import jakarta.persistence.EntityManager;
+      import jakarta.validation.Valid;
+      import org.springframework.data.domain.Page;
+      import org.springframework.data.domain.Pageable;
+      import org.springframework.data.jpa.repository.JpaRepository;
+      import org.springframework.data.jpa.repository.Modifying;
+      import org.springframework.data.jpa.repository.Query;
+      import org.springframework.data.repository.query.Param;
+      import org.springframework.stereotype.Repository;
+      import com.example.entity.User;
+      
+      import java.time.LocalDateTime;
+      import java.util.List;
+      import java.util.Optional;
+      
+      /**
+       * Spring Data JPA repository for User entity operations.
+       * Migrated from legacy DAO implementation to modern repository pattern.
+       * 
+       * @author Migration System
+       * @since Spring Boot 3.3
+       */
+      @Repository
+      public interface UserRepository extends JpaRepository<User, Long> {
+          
+          // Derived query methods
+          Optional<User> findByEmail(String email);
+          List<User> findByActiveTrue();
+          Page<User> findByLastNameContainingIgnoreCase(String lastName, Pageable pageable);
+          
+          // Custom JPQL queries
+          @Query("SELECT u FROM User u WHERE u.createdDate >= :startDate AND u.active = true ORDER BY u.createdDate DESC")
+          List<User> findActiveUsersCreatedAfter(@Param("startDate") LocalDateTime startDate);
+          
+          // Native SQL query for complex operations
+          @Query(value = "SELECT u.* FROM users u JOIN user_roles ur ON u.id = ur.user_id WHERE ur.role_name = :role", nativeQuery = true)
+          List<User> findUsersByRole(@Param("role") String role);
+          
+          // Bulk update operation
+          @Modifying
+          @Query("UPDATE User u SET u.active = false WHERE u.lastLoginDate < :cutoffDate")
+          int deactivateInactiveUsers(@Param("cutoffDate") LocalDateTime cutoffDate);
+          
+          // Check existence
+          boolean existsByEmailAndActiveTrue(String email);
+          
+          // Count operations
+          long countByActiveTrue();
+      }
+      
+      // Updated Entity (if modifications needed)
+      package com.example.entity;
+      
+      import jakarta.persistence.*;
+      import jakarta.validation.constraints.Email;
+      import jakarta.validation.constraints.NotBlank;
+      import jakarta.validation.constraints.Size;
+      import org.springframework.data.annotation.CreatedDate;
+      import org.springframework.data.annotation.LastModifiedDate;
+      import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+      
+      import java.time.LocalDateTime;
+      import java.util.Objects;
+      
+      /**
+       * User entity with modern JPA mapping and validation.
+       * Enhanced with auditing and performance optimizations.
+       */
+      @Entity
+      @Table(name = "users", indexes = {
+          @Index(name = "idx_user_email", columnList = "email", unique = true),
+          @Index(name = "idx_user_active", columnList = "active"),
+          @Index(name = "idx_user_created_date", columnList = "created_date")
+      })
+      @EntityListeners(AuditingEntityListener.class)
+      public class User {
+          
+          @Id
+          @GeneratedValue(strategy = GenerationType.IDENTITY)
+          private Long id;
+          
+          @Column(name = "email", nullable = false, unique = true, length = 100)
+          @Email(message = "Email should be valid")
+          @NotBlank(message = "Email is required")
+          private String email;
+          
+          @Column(name = "first_name", nullable = false, length = 50)
+          @NotBlank(message = "First name is required")
+          @Size(max = 50, message = "First name must not exceed 50 characters")
+          private String firstName;
+          
+          @Column(name = "last_name", nullable = false, length = 50)
+          @NotBlank(message = "Last name is required")
+          @Size(max = 50, message = "Last name must not exceed 50 characters")
+          private String lastName;
+          
+          @Column(name = "active", nullable = false)
+          private Boolean active = true;
+          
+          @CreatedDate
+          @Column(name = "created_date", nullable = false, updatable = false)
+          private LocalDateTime createdDate;
+          
+          @LastModifiedDate
+          @Column(name = "last_modified_date")
+          private LocalDateTime lastModifiedDate;
+          
+          @Column(name = "last_login_date")
+          private LocalDateTime lastLoginDate;
+          
+          @Version
+          @Column(name = "version")
+          private Integer version;
+          
+          // Constructors
+          public User() {}
+          
+          public User(String email, String firstName, String lastName) {
+              this.email = email;
+              this.firstName = firstName;
+              this.lastName = lastName;
+              this.active = true;
+          }
+          
+          // Getters and setters
+          public Long getId() { return id; }
+          public void setId(Long id) { this.id = id; }
+          
+          public String getEmail() { return email; }
+          public void setEmail(String email) { this.email = email; }
+          
+          public String getFirstName() { return firstName; }
+          public void setFirstName(String firstName) { this.firstName = firstName; }
+          
+          public String getLastName() { return lastName; }
+          public void setLastName(String lastName) { this.lastName = lastName; }
+          
+          public Boolean getActive() { return active; }
+          public void setActive(Boolean active) { this.active = active; }
+          
+          public LocalDateTime getCreatedDate() { return createdDate; }
+          public void setCreatedDate(LocalDateTime createdDate) { this.createdDate = createdDate; }
+          
+          public LocalDateTime getLastModifiedDate() { return lastModifiedDate; }
+          public void setLastModifiedDate(LocalDateTime lastModifiedDate) { this.lastModifiedDate = lastModifiedDate; }
+          
+          public LocalDateTime getLastLoginDate() { return lastLoginDate; }
+          public void setLastLoginDate(LocalDateTime lastLoginDate) { this.lastLoginDate = lastLoginDate; }
+          
+          public Integer getVersion() { return version; }
+          public void setVersion(Integer version) { this.version = version; }
+          
+          // Business methods
+          public String getFullName() {
+              return firstName + " " + lastName;
+          }
+          
+          public boolean isActive() {
+              return Boolean.TRUE.equals(active);
+          }
+          
+          // equals and hashCode
+          @Override
+          public boolean equals(Object o) {
+              if (this == o) return true;
+              if (o == null || getClass() != o.getClass()) return false;
+              User user = (User) o;
+              return Objects.equals(id, user.id) && Objects.equals(email, user.email);
+          }
+          
+          @Override
+          public int hashCode() {
+              return Objects.hash(id, email);
+          }
+          
+          @Override
+          public String toString() {
+              return "User{id=" + id + ", email='" + email + "', firstName='" + firstName + 
+                     "', lastName='" + lastName + "', active=" + active + "}";
+          }
+      }
+      ```
+
+      Generate the complete, modern Spring Data JPA repository using Java 21 features:
+
+    parameters:
+      - dao_type
+      - entity_name
+      - id_type
+      - business_domain
+      - complexity
+      - db_operations
+      - integration_requirements
+      - source_code
+      - detected_patterns
+      - learning_context
+      - `findById(Long id)` → Automatic via JpaRepository
+      - `findAll()` → Automatic via JpaRepository
+      - `save(Entity entity)` → Automatic via JpaRepository
+      - `delete(Entity entity)` → Automatic via JpaRepository
+      - Custom finders → Query derivation or @Query
+      - Session management → Removed (handled by Spring)
+      - Transaction demarcation → @Transactional annotation
+
+      QUERY METHOD PATTERNS:
+      - `findByUsername(String username)` → Derived query method
+      - `findByEmailAndActive(String email, boolean active)` → Derived query
+      - Complex queries → `@Query("SELECT u FROM User u WHERE ...")`
+      - Native queries → `@Query(value = "SELECT * FROM users WHERE ...", nativeQuery = true)`
+      - Named parameters → `@Query("... WHERE name = :name")` with `@Param("name")`
+
+      ENTITY REQUIREMENTS:
+      - @Entity annotation
+      - @Id and @GeneratedValue for primary key
+      - @Column annotations for specific mappings
+      - @Table annotation if table name differs
+      - Proper constructors and equals/hashCode
+
+      OUTPUT REQUIREMENTS:
+      - Repository interface with proper Spring Data annotations
+      - Entity class with JPA annotations (if modifications needed)
+      - Custom repository implementation (only if complex logic required)
+      - Complete, compilable Java code
+      - No legacy DAO remnants
+      - Raw Java only - no explanations
+
+      Generate the complete Spring Data JPA repository and any required entity modifications:
+
+    parameters:
+      - dao_type
+      - entity_name
+      - complexity
+      - db_operations
+      - business_domain
+      - source_code
+      - learning_context
+      - detected_patterns
+
+  hibernate_dao_migration:
+    name: "Hibernate DAO Migration"
+    description: "Convert Hibernate Session-based DAOs to Spring Data JPA repositories"
+    template: |
+      You are a Spring Data JPA expert converting Hibernate Session-based DAOs to modern repository patterns.
+
+      MIGRATION CONTEXT:
+      - Session Usage Patterns: {session_patterns}
+      - Query Types: {query_types}
+      - Transaction Handling: {transaction_patterns}
+      - Entity Relationships: {entity_relationships}
+
+      ORIGINAL HIBERNATE DAO:
+      ```java
+      {source_code}
+      ```
+
+      TRANSFORMATION REQUIREMENTS:
+      1. **Session Elimination** → Remove SessionFactory and Session dependencies
+      2. **Query Conversion** → Convert HQL to JPQL in @Query annotations
+      3. **Criteria API** → Replace with Specification pattern or derived queries
+      4. **Transaction Management** → Remove manual transactions, use @Transactional at service layer
+      5. **Exception Handling** → Replace Hibernate exceptions with Spring Data exceptions
+      6. **Lazy Loading** → Configure with @EntityGraph or fetch joins
+      7. **Caching** → Replace Hibernate L2 cache with @Cacheable
+
+      HIBERNATE TO SPRING DATA MAPPING:
+      - `session.get(Class, id)` → `repository.findById(id).orElse(null)`
+      - `session.save(entity)` → `repository.save(entity)`
+      - `session.createQuery(hql)` → `@Query("jpql")` or derived query methods
+      - `session.createCriteria()` → Specification pattern
+      - `session.beginTransaction()` → `@Transactional` annotation
+      - `session.flush()` → `repository.flush()` or `@Modifying(flushAutomatically = true)`
+
+      PERFORMANCE CONSIDERATIONS:
+      - Add @EntityGraph for optimized fetching
+      - Use @BatchSize for collection loading
+      - Implement @Cacheable for read-heavy operations
+      - Add database indexes via @Index annotations
+
+      Generate the Spring Data JPA repository interface:
+
+    parameters:
+      - session_patterns
+      - query_types
+      - transaction_patterns
+      - entity_relationships
+      - source_code
+
+  jdbc_dao_migration:
+    name: "JDBC DAO Migration"
+    description: "Convert JDBC-based DAOs to Spring Data JPA repositories"
+    template: |
+      You are a Spring Data JPA expert converting legacy JDBC DAOs to modern repository patterns.
+
+      MIGRATION CONTEXT:
+      - Connection Handling: {connection_patterns}
+      - SQL Query Types: {sql_types}
+      - ResultSet Mapping: {mapping_patterns}
+      - Transaction Management: {transaction_management}
+
+      ORIGINAL JDBC DAO:
+      ```java
+      {source_code}
+      ```
+
+      TRANSFORMATION REQUIREMENTS:
+      1. **Connection Management** → Remove all Connection, PreparedStatement, ResultSet handling
+      2. **SQL to JPA** → Convert SQL queries to JPQL or native @Query annotations
+      3. **Manual Mapping** → Replace ResultSet mapping with JPA entity mapping
+      4. **Exception Handling** → Replace SQLException with Spring Data exceptions
+      5. **Transaction Handling** → Remove manual commit/rollback, use @Transactional
+      6. **Resource Management** → Remove try-with-resources and connection cleanup
+      7. **Batch Operations** → Use Spring Data batch methods
+
+      JDBC TO JPA MAPPING:
+      - `PreparedStatement ps = conn.prepareStatement(sql)` → `@Query("jpql")` or derived query
+      - `ResultSet rs = ps.executeQuery()` → Entity object return types
+      - `while(rs.next()) { entity = map(rs); }` → JPA automatic mapping
+      - `conn.setAutoCommit(false); conn.commit()` → `@Transactional`
+      - `ps.setString(1, value)` → `@Param("paramName")` in @Query
+      - `conn.prepareStatement(sql, RETURN_GENERATED_KEYS)` → `@GeneratedValue` on entity
+
+      ENTITY MAPPING REQUIREMENTS:
+      - Create or update entity with proper @Entity, @Table annotations
+      - Add @Id and @GeneratedValue for primary keys
+      - Map columns with @Column annotations
+      - Add relationships with @ManyToOne, @OneToMany, etc.
+      - Implement validation with Jakarta Bean Validation
+
+      Generate the complete Spring Data JPA repository and entity mapping:
+
+    parameters:
+      - connection_patterns
+      - sql_types
+      - mapping_patterns
+      - transaction_management
+      - source_code
+
+  complex_dao_migration:
+    name: "Complex DAO Migration"
+    description: "Migration for DAOs with complex business logic to Spring Data JPA"
+    template: |
+      You are a Spring Data JPA expert migrating complex DAOs with advanced business logic to modern repository patterns.
+
+      COMPLEXITY CONTEXT:
+      - Business Logic Patterns: {business_logic_patterns}
+      - Custom Query Count: {custom_query_count}
+      - Integration Points: {integration_patterns}
+      - Performance Requirements: {performance_requirements}
+
+      ORIGINAL COMPLEX DAO:
+      ```java
+      {source_code}
+      ```
+
+      MIGRATION STRATEGY:
+      1. **Repository Interface** → Create standard JpaRepository for basic CRUD operations
+      2. **Custom Repository** → Create custom repository interface and implementation for complex logic
+      3. **Business Logic Separation** → Move complex business logic to service layer
+      4. **Query Optimization** → Use @EntityGraph, @BatchSize, and query hints
+      5. **Transaction Management** → Apply @Transactional with proper propagation and isolation
+      6. **Caching Strategy** → Implement @Cacheable for read-heavy operations
+
+      COMPLEX PATTERN HANDLING:
+      - **Multi-entity operations** → Service layer with @Transactional
+      - **Dynamic queries** → Specification pattern with CriteriaBuilder
+      - **Bulk operations** → @Modifying queries with batch processing
+      - **Custom SQL logic** → Native @Query with proper parameter binding
+      - **Stored procedures** → @NamedStoredProcedureQuery or EntityManager
+      - **Advanced joins** → @EntityGraph or JPQL with fetch joins
+
+      ARCHITECTURE PATTERN:
+      ```java
+      // Standard repository interface
+      public interface EntityRepository extends JpaRepository<Entity, ID>, EntityRepositoryCustom {
+          // Derived query methods
+      }
+      
+      // Custom repository interface
+      public interface EntityRepositoryCustom {
+          // Complex business operations
+      }
+      
+      // Custom repository implementation
+      @Repository
+      public class EntityRepositoryImpl implements EntityRepositoryCustom {
+          @PersistenceContext
+          private EntityManager entityManager;
+          // Complex logic implementation
+      }
+      ```
+
+      PERFORMANCE OPTIMIZATIONS:
+      - Use @EntityGraph for optimal fetching strategies
+      - Implement @Cacheable with appropriate cache eviction
+      - Add @BatchSize for collection loading optimization
+      - Use @QueryHints for database-specific optimizations
+      - Implement pagination for large result sets
+
+      Generate the complete repository structure with custom implementation:
+
+    parameters:
+      - business_logic_patterns
+      - custom_query_count
+      - integration_patterns
+      - performance_requirements
+      - source_code
+
+  learning_enhanced_dao_migration:
+    name: "Learning-Enhanced DAO Migration"
+    description: "Migration using patterns from successful previous DAO conversions"
+    template: |
+      You are an expert Spring Data JPA migration architect with access to successful patterns from previous DAO migrations.
+
+      SUCCESSFUL PATTERNS FROM MEMORY:
+      {learning_patterns}
+
+      PREVIOUS SUCCESSFUL CONVERSIONS:
+      {successful_examples}
+
+      CURRENT MIGRATION TASK:
+      Convert this legacy DAO using proven patterns from similar successful migrations.
+
+      SOURCE DAO CODE:
+      ```java
+      {source_code}
+      ```
+
+      CONTEXT:
+      - DAO Type: {dao_type}
+      - Entity: {entity_name}
+      - Business Domain: {business_domain}
+      - Complexity: {complexity}
+      - Similar Previous Success Score: {similarity_score}
+
+      APPLY LEARNED PATTERNS:
+      1. Use repository patterns that worked well in similar business domains
+      2. Follow query method naming conventions from successful migrations
+      3. Apply entity mapping strategies that achieved high validation scores
+      4. Incorporate transaction management approaches that prevented data issues
+      5. Use performance optimization patterns proven successful in similar contexts
+      6. Apply error handling strategies that enhanced system reliability
+
+      REQUIREMENTS:
+      - Apply the most successful patterns from memory
+      - Ensure compatibility with established project conventions
+      - Generate clean, production-ready Spring Data JPA repository
+      - Include comprehensive error handling and validation
+      - Follow performance best practices from learned patterns
+
+      Generate the enhanced repository using learned patterns:
+
+    parameters:
+      - source_code
+      - dao_type
+      - entity_name
+      - business_domain
+      - complexity
+      - learning_patterns
+      - successful_examples
+      - similarity_score
+
+validation:
+  critical_success_indicators:
+    - "Repository interface extends JpaRepository<Entity, ID> with proper generics"
+    - "All Jakarta namespace imports (no javax.* references remain)"
+    - "Proper JPA entity annotations (@Entity, @Id, @GeneratedValue) present"
+    - "Query methods follow Spring Data naming conventions"
+    - "@Transactional applied at appropriate service layer boundaries"
+    - "No legacy Session, SessionFactory, Connection, or JDBC code remains"
+    - "Custom queries properly annotated with @Query and @Param"
+    - "Entity relationships correctly mapped with JPA annotations"
+    - "Proper exception handling using Spring Data exception hierarchy"
+    - "Performance optimizations applied (@EntityGraph, @BatchSize, caching)"
+    
+  quality_metrics:
+    - "All CRUD operations accurately preserved from original DAO"
+    - "Custom queries correctly translated to JPQL or native SQL"
+    - "Transaction boundaries properly maintained at service layer"
+    - "Entity relationships and mappings preserve data integrity"
+    - "Performance considerations addressed with appropriate optimizations"
+    - "Proper separation of concerns between repository and service layers"
+    - "Comprehensive validation annotations on entity fields"
+    - "Auditing and versioning implemented where appropriate"
+    - "Thread-safe design compatible with virtual threads"
+    - "Error handling provides meaningful messages and proper logging"
+
+  learning_metrics:
+    - "Repository compilation and integration success rate"
+    - "Query performance improvement over legacy DAO"
+    - "Transaction management effectiveness and rollback accuracy"
+    - "Entity mapping correctness and relationship integrity"
+    - "Exception handling completeness and error recovery"
+    - "Code maintainability and readability improvement score"
+
+examples:
+  hibernate_dao_input:
+    dao_type: "hibernate"
+    entity_name: "User"
+    id_type: "Long"
+    complexity: "medium"
+    db_operations: ["findById", "findByEmail", "findActiveUsers", "save", "delete", "bulkUpdateStatus"]
+    business_domain: "user_management"
+    detected_patterns: ["session_management", "hql_queries", "manual_transactions", "criteria_api"]
+    source_code: |
+      package com.legacy.dao;
+      
+      import org.hibernate.Session;
+      import org.hibernate.SessionFactory;
+      import org.hibernate.Transaction;
+      import org.hibernate.Query;
+      import org.hibernate.Criteria;
+      import org.hibernate.criterion.Restrictions;
+      import org.springframework.beans.factory.annotation.Autowired;
+      import org.springframework.stereotype.Repository;
+      import com.legacy.entity.User;
+      import java.util.List;
+      
+      @Repository
+      public class UserDAOImpl implements UserDAO {
+          
+          @Autowired
+          private SessionFactory sessionFactory;
+          
+          public User findById(Long id) {
+              Session session = sessionFactory.getCurrentSession();
+              return (User) session.get(User.class, id);
+          }
+          
+          public User findByEmail(String email) {
+              Session session = sessionFactory.getCurrentSession();
+              Query query = session.createQuery("FROM User WHERE email = :email");
+              query.setParameter("email", email);
+              return (User) query.uniqueResult();
+          }
+          
+          public List<User> findActiveUsers() {
+              Session session = sessionFactory.getCurrentSession();
+              Criteria criteria = session.createCriteria(User.class);
+              criteria.add(Restrictions.eq("active", true));
+              return criteria.list();
+          }
+          
+          public void save(User user) {
+              Session session = sessionFactory.getCurrentSession();
+              session.saveOrUpdate(user);
+          }
+          
+          public void delete(User user) {
+              Session session = sessionFactory.getCurrentSession();
+              session.delete(user);
+          }
+          
+          public int bulkUpdateStatus(String status, List<Long> userIds) {
+              Session session = sessionFactory.getCurrentSession();
+              Transaction tx = session.beginTransaction();
+              try {
+                  Query query = session.createQuery(
+                      "UPDATE User SET status = :status WHERE id IN (:ids)");
+                  query.setParameter("status", status);
+                  query.setParameterList("ids", userIds);
+                  int result = query.executeUpdate();
+                  tx.commit();
+                  return result;
+              } catch (Exception e) {
+                  tx.rollback();
+                  throw e;
+              }
+          }
+      }
+
+  expected_spring_data_output: |
+    package com.example.repository;
+    
+    import jakarta.persistence.EntityManager;
+    import jakarta.persistence.PersistenceContext;
+    import jakarta.validation.Valid;
+    import org.springframework.data.domain.Page;
+    import org.springframework.data.domain.Pageable;
+    import org.springframework.data.jpa.repository.JpaRepository;
+    import org.springframework.data.jpa.repository.Modifying;
+    import org.springframework.data.jpa.repository.Query;
+    import org.springframework.data.repository.query.Param;
+    import org.springframework.stereotype.Repository;
+    import org.springframework.transaction.annotation.Transactional;
+    import com.example.entity.User;
+    
+    import java.util.List;
+    import java.util.Optional;
+    
+    /**
+     * Spring Data JPA repository for User entity operations.
+     * Migrated from legacy Hibernate DAO implementation to modern repository pattern.
+     * 
+     * @author Migration System
+     * @since Spring Boot 3.3
+     */
+    @Repository
+    public interface UserRepository extends JpaRepository<User, Long> {
+        
+        // Derived query methods replacing manual HQL/Criteria
+        Optional<User> findByEmail(String email);
+        List<User> findByActiveTrue();
+        Page<User> findByActiveTrueOrderByCreatedDateDesc(Pageable pageable);
+        
+        // Custom JPQL query replacing HQL
+        @Query("SELECT u FROM User u WHERE u.email = :email AND u.active = true")
+        Optional<User> findActiveUserByEmail(@Param("email") String email);
+        
+        // Bulk update operation replacing manual transaction handling
+        @Modifying
+        @Transactional
+        @Query("UPDATE User u SET u.status = :status WHERE u.id IN :ids")
+        int updateStatusByIds(@Param("status") String status, @Param("ids") List<Long> userIds);
+        
+        // Complex query with join
+        @Query("SELECT u FROM User u JOIN u.roles r WHERE r.name = :roleName AND u.active = true")
+        List<User> findActiveUsersByRole(@Param("roleName") String roleName);
+        
+        // Native query for complex operations
+        @Query(value = "SELECT * FROM users u WHERE u.last_login_date > DATE_SUB(NOW(), INTERVAL 30 DAY)", nativeQuery = true)
+        List<User> findRecentlyActiveUsers();
+        
+        // Check existence methods
+        boolean existsByEmailAndActiveTrue(String email);
+        
+        // Count operations
+        long countByActiveTrue();
+        
+        @Query("SELECT COUNT(u) FROM User u WHERE u.createdDate >= CURRENT_DATE")
+        long countUsersCreatedToday();
+    }
+
+  jdbc_dao_input:
+    dao_type: "jdbc"
+    entity_name: "Product"
+    id_type: "Long"
+    complexity: "high"
+    db_operations: ["findById", "findByCategory", "save", "update", "delete", "findProductsWithDetails"]
+    business_domain: "product_catalog"
+    detected_patterns: ["manual_sql", "resultset_mapping", "connection_management", "prepared_statements"]
+    source_code: |
+      package com.legacy.dao;
+      
+      import java.sql.*;
+      import java.util.ArrayList;
+      import java.util.List;
+      import javax.sql.DataSource;
+      import org.springframework.beans.factory.annotation.Autowired;
+      import org.springframework.stereotype.Repository;
+      import com.legacy.entity.Product;
+      
+      @Repository
+      public class ProductDAOImpl implements ProductDAO {
+          
+          @Autowired
+          private DataSource dataSource;
+          
+          public Product findById(Long id) {
+              String sql = "SELECT * FROM products WHERE id = ?";
+              try (Connection conn = dataSource.getConnection();
+                   PreparedStatement ps = conn.prepareStatement(sql)) {
+                  
+                  ps.setLong(1, id);
+                  try (ResultSet rs = ps.executeQuery()) {
+                      if (rs.next()) {
+                          return mapResultSetToProduct(rs);
+                      }
+                  }
+              } catch (SQLException e) {
+                  throw new RuntimeException("Error finding product by id", e);
+              }
+              return null;
+          }
+          
+          public List<Product> findByCategory(String category) {
+              String sql = "SELECT * FROM products WHERE category = ? AND active = 1";
+              List<Product> products = new ArrayList<>();
+              try (Connection conn = dataSource.getConnection();
+                   PreparedStatement ps = conn.prepareStatement(sql)) {
+                  
+                  ps.setString(1, category);
+                  try (ResultSet rs = ps.executeQuery()) {
+                      while (rs.next()) {
+                          products.add(mapResultSetToProduct(rs));
+                      }
+                  }
+              } catch (SQLException e) {
+                  throw new RuntimeException("Error finding products by category", e);
+              }
+              return products;
+          }
+          
+          public void save(Product product) {
+              String sql = "INSERT INTO products (name, category, price, active, created_date) VALUES (?, ?, ?, ?, ?)";
+              try (Connection conn = dataSource.getConnection();
+                   PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                  
+                  conn.setAutoCommit(false);
+                  ps.setString(1, product.getName());
+                  ps.setString(2, product.getCategory());
+                  ps.setBigDecimal(3, product.getPrice());
+                  ps.setBoolean(4, product.isActive());
+                  ps.setTimestamp(5, Timestamp.valueOf(product.getCreatedDate()));
+                  
+                  ps.executeUpdate();
+                  
+                  try (ResultSet rs = ps.getGeneratedKeys()) {
+                      if (rs.next()) {
+                          product.setId(rs.getLong(1));
+                      }
+                  }
+                  conn.commit();
+              } catch (SQLException e) {
+                  throw new RuntimeException("Error saving product", e);
+              }
+          }
+          
+          private Product mapResultSetToProduct(ResultSet rs) throws SQLException {
+              Product product = new Product();
+              product.setId(rs.getLong("id"));
+              product.setName(rs.getString("name"));
+              product.setCategory(rs.getString("category"));
+              product.setPrice(rs.getBigDecimal("price"));
+              product.setActive(rs.getBoolean("active"));
+              product.setCreatedDate(rs.getTimestamp("created_date").toLocalDateTime());
+              return product;
+          }
+      }
+
+  expected_jdbc_migration_output: |
+    package com.example.repository;
+    
+    import jakarta.persistence.EntityManager;
+    import jakarta.persistence.PersistenceContext;
+    import org.springframework.data.domain.Page;
+    import org.springframework.data.domain.Pageable;
+    import org.springframework.data.jpa.repository.JpaRepository;
+    import org.springframework.data.jpa.repository.Query;
+    import org.springframework.data.repository.query.Param;
+    import org.springframework.stereotype.Repository;
+    import com.example.entity.Product;
+    
+    import java.math.BigDecimal;
+    import java.util.List;
+    
+    /**
+     * Spring Data JPA repository for Product entity operations.
+     * Migrated from legacy JDBC DAO implementation.
+     */
+    @Repository
+    public interface ProductRepository extends JpaRepository<Product, Long> {
+        
+        // Derived query methods replacing manual SQL
+        List<Product> findByCategoryAndActiveTrue(String category);
+        Page<Product> findByActiveTrueOrderByCreatedDateDesc(Pageable pageable);
+        
+        // Price range queries
+        List<Product> findByPriceBetweenAndActiveTrue(BigDecimal minPrice, BigDecimal maxPrice);
+        
+        // Custom JPQL queries
+        @Query("SELECT p FROM Product p WHERE p.category = :category AND p.price <= :maxPrice AND p.active = true")
+        List<Product> findAffordableProductsByCategory(@Param("category") String category, @Param("maxPrice") BigDecimal maxPrice);
+        
+        // Native SQL for complex operations
+        @Query(value = "SELECT p.* FROM products p WHERE p.category = :category AND p.price > (SELECT AVG(price) FROM products WHERE category = :category)", nativeQuery = true)
+        List<Product> findAboveAveragePriceByCategory(@Param("category") String category);
+        
+        // Existence and count methods
+        boolean existsByCategoryAndActiveTrue(String category);
+        long countByCategoryAndActiveTrue(String category);
+    }
