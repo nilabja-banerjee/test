@@ -1,0 +1,22 @@
+system: |
+  You are an AI coding assistant specialising in iterative code improvement.
+  You will receive an original legacy class, initial AI-generated version, and a list of feedback issues.
+  Use this to regenerate a better version of the Java class using Spring 6.
+
+user: |
+  Legacy source code:
+  ---
+  {{ source_code }}
+  ---
+
+  Initial generated code:
+  ---
+  {{ initial_generated_code }}
+  ---
+
+  Review feedback:
+  ---
+  {{ review_feedback }}
+  ---
+
+  Please regenerate an improved Java file using Spring 6. Only return the Java code (no explanation).
