@@ -1,0 +1,41 @@
+{
+  "/lead": {
+    "type": "com.javachap.web.controller.LeadAction",
+    "form": "leadForm",
+    "scope": "request",
+    "input": "/leadDetails.jsp",
+    "forwards": {
+      "leadCreateEdit": "/leadCreateEdit.jsp"
+    }
+  },
+  "/leadListing": {
+    "type": "com.javachap.web.controller.LeadListingAction",
+    "form": "leadListingForm",
+    "scope": "request",
+    "input": "/leadListing.jsp",
+    "forwards": {}
+  },
+  "/language": {
+    "type": "com.javachap.web.controller.LanguageAction",
+    "form": "languageForm",
+    "scope": "request",
+    "input": null,
+    "forwards": {
+      "leadListing": "/leadListing.do"
+    }
+  },
+  "/login": {
+    "type": "com.javachap.web.controller.LoginAction",
+    "form": "loginForm",
+    "scope": "request",
+    "input": "/login.jsp",
+    "forwards": {}
+  },
+  "/logout": {
+    "type": "com.javachap.web.controller.LogoutAction",
+    "form": null,
+    "scope": "request",
+    "input": null,
+    "forwards": {}
+  }
+}

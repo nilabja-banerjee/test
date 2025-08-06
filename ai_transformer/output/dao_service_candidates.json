@@ -1,0 +1,47 @@
+[
+  {
+    "consumer": "LeadListingAction",
+    "instantiates": "com.javachap.service.LeadService",
+    "file": "LeadListingAction.java"
+  },
+  {
+    "consumer": "LeadAction",
+    "instantiates": "com.javachap.service.LeadService",
+    "file": "LeadAction.java"
+  },
+  {
+    "consumer": "ServiceImpl",
+    "instantiates": "com.javachap.service.Service",
+    "file": "ServiceImpl.java"
+  },
+  {
+    "consumer": "LeadServiceImpl",
+    "instantiates": "com.javachap.service.LeadService",
+    "file": "LeadServiceImpl.java"
+  },
+  {
+    "consumer": "UserServiceImpl",
+    "instantiates": "com.javachap.service.UserService",
+    "file": "UserServiceImpl.java"
+  },
+  {
+    "consumer": "CategoryServiceImpl",
+    "instantiates": "com.javachap.service.CategoryService",
+    "file": "CategoryServiceImpl.java"
+  },
+  {
+    "consumer": "Test",
+    "instantiates": "com.javachap.service.LeadService",
+    "file": "Test.java"
+  },
+  {
+    "consumer": "Test",
+    "instantiates": "com.javachap.service.CategoryService",
+    "file": "Test.java"
+  },
+  {
+    "consumer": "Test",
+    "instantiates": "com.javachap.service.UserService",
+    "file": "Test.java"
+  }
+]

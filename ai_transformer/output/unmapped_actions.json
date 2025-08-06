@@ -1,0 +1,10 @@
+[
+  "BaseForm",
+  "LanguageAction",
+  "LanguageForm",
+  "LeadAction",
+  "LeadListingAction",
+  "LoginAction",
+  "LogoutAction",
+  "SecuredAction"
+]
